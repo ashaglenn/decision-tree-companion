@@ -1031,57 +1031,7 @@
 
         <div class="ppt-split">
           <div class="ppt-diagram">
-            <!-- SVG: Layer diagram -->
-            <svg viewBox="0 0 380 220" width="380" height="220" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono', monospace">
-              <!-- background -->
-              <rect width="380" height="220" fill="#ece2cb" rx="4"/>
-
-              <!-- LEFT: Edit mode -->
-              <text x="72" y="22" font-size="9" letter-spacing="2" fill="#6a5a45" text-anchor="middle" font-family="'JetBrains Mono',monospace">EDIT MODE</text>
-              <!-- text box -->
-              <rect x="12" y="34" width="120" height="44" rx="2" fill="#f7f2e8" stroke="#b8451f" stroke-width="1.5" stroke-dasharray="4,3"/>
-              <text x="72" y="52" font-size="12" fill="#1e1a14" text-anchor="middle">Iron Man</text>
-              <text x="72" y="68" font-size="9" fill="#6a5a45" text-anchor="middle">← text box (editable)</text>
-              <!-- transparent shape moved aside -->
-              <rect x="148" y="34" width="120" height="44" rx="2" fill="rgba(184,69,31,0.08)" stroke="#b8451f" stroke-width="1.5" stroke-dasharray="4,3"/>
-              <text x="208" y="52" font-size="10" fill="#b8451f" text-anchor="middle">transparent</text>
-              <text x="208" y="64" font-size="10" fill="#b8451f" text-anchor="middle">shape (moved)</text>
-              <!-- arrow showing move -->
-              <path d="M136 56 L146 56" stroke="#b8451f" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
-              <defs>
-                <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                  <path d="M0,0 L6,3 L0,6 Z" fill="#b8451f"/>
-                </marker>
-              </defs>
-              <text x="141" y="48" font-size="9" fill="#b8451f" text-anchor="middle">slide</text>
-
-              <!-- divider -->
-              <line x1="190" y1="20" x2="190" y2="200" stroke="#1e1a14" stroke-width="0.5" stroke-opacity="0.2"/>
-
-              <!-- RIGHT: Presentation mode -->
-              <text x="308" y="22" font-size="9" letter-spacing="2" fill="#6a5a45" text-anchor="middle" font-family="'JetBrains Mono',monospace">PRESENTATION</text>
-              <!-- text box -->
-              <rect x="248" y="34" width="120" height="44" rx="2" fill="#f7f2e8" stroke="#e3d6b6" stroke-width="1"/>
-              <text x="308" y="52" font-size="12" fill="#1e1a14" text-anchor="middle">Iron Man</text>
-              <!-- transparent shape on top -->
-              <rect x="248" y="34" width="120" height="44" rx="2" fill="rgba(184,69,31,0.0)" stroke="none"/>
-              <!-- cursor icon -->
-              <text x="308" y="68" font-size="9" fill="#6a5a45" text-anchor="middle">↑ shape on top · click to link</text>
-
-              <!-- labels at bottom -->
-              <text x="72" y="106" font-size="10" fill="#3a3127" text-anchor="middle">1. Slide shape aside</text>
-              <text x="72" y="120" font-size="10" fill="#3a3127" text-anchor="middle">2. Edit the text box</text>
-              <text x="72" y="134" font-size="10" fill="#3a3127" text-anchor="middle">3. Slide shape back</text>
-              <text x="308" y="106" font-size="10" fill="#3a3127" text-anchor="middle">Text shows through.</text>
-              <text x="308" y="120" font-size="10" fill="#3a3127" text-anchor="middle">Shape is clickable.</text>
-              <text x="308" y="134" font-size="10" fill="#3a3127" text-anchor="middle">Link stays intact.</text>
-
-              <!-- Slide name tooltip demo -->
-              <rect x="20" y="155" width="340" height="52" rx="3" fill="#1e1a14"/>
-              <text x="36" y="173" font-size="9" fill="#efd6c4" letter-spacing="1.5" font-family="'JetBrains Mono',monospace">SLIDE NAMES (hover preview)</text>
-              <text x="36" y="190" font-size="11" fill="#f7f2e8">Each slide has a title: &quot;CP1 · Q2 · Correct&quot;</text>
-              <text x="36" y="204" font-size="10" fill="rgba(247,242,232,0.6)">Hover any link in slideshow mode to see exactly where it goes.</text>
-            </svg>
+            <img src="assets/layer-diagram.png" alt="Edit Mode vs Ready to Play diagram showing how to slide the transparent link box aside to edit text, then slide it back" style="width:100%;max-width:560px;border-radius:6px;display:block;"/>
           </div>
 
           <ol class="ppt-steps">
