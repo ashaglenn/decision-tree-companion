@@ -1019,14 +1019,14 @@
     <div class="ppt-guide">
       <div class="ppt-guide-header">
         <span class="eyebrow">Using the templates</span>
-        <h3>How to edit a PowerPoint escape room &mdash; without touching the links.</h3>
+        <h3>How to edit a PowerPoint escape room &mdash; without breaking the links.</h3>
       </div>
 
       <!-- PART 1: The transparent shape system -->
       <div class="ppt-section">
         <span class="ppt-section-label">The core mechanic</span>
         <h4>Every answer is a text box with an invisible shape on top.</h4>
-        <p>The clickable part of each answer isn&rsquo;t the text &mdash; it&rsquo;s a transparent shape sitting on top of it. That shape carries the hyperlink. This means you can freely change what any answer <em>says</em> without ever touching the link, and you can swap which answer is &ldquo;correct&rdquo; by simply reassigning the link on one shape.</p>
+        <p>The clickable part of each answer isn&rsquo;t the text &mdash; it&rsquo;s a transparent shape sitting on top of it. That shape carries the hyperlink. This means you can freely change what any answer <em>says</em> without breaking the links, and you can swap which answer is &ldquo;correct&rdquo; by simply moving the shapes &mdash; no hyperlink editing required.</p>
 
         <div class="ppt-split">
           <div class="ppt-diagram">
@@ -1109,7 +1109,7 @@
 
         <div class="ppt-callout">
           <strong>Swapping correct &amp; wrong answers</strong>
-          Because the link lives on the shape (not the text), you can make either answer the &ldquo;correct&rdquo; one. Right-click the transparent shape &rarr; <em>Edit Hyperlink</em> &rarr; change the destination to the correct-answer slide or wrong-answer slide. The slide names tell you exactly which is which &mdash; hover before you commit.
+          Each question slide has two transparent shapes: one linked to the correct path, one linked to the wrong path. To switch which answer is &ldquo;correct,&rdquo; just drag the shapes and swap their positions &mdash; place the correct-linked shape over whichever answer you want students to click. No hyperlink editing, ever.
         </div>
       </div>
 
@@ -1188,8 +1188,8 @@
         </div>
 
         <div class="ppt-callout">
-          <strong>Slide names = your map</strong>
-          Every slide is named with a consistent pattern &mdash; e.g. &ldquo;CP2 &middot; Q3 &middot; Wrong&rdquo; or &ldquo;CP1 &middot; Q1 &middot; Reflection &middot; Correct.&rdquo; In the Selection Pane (<em>Home &rarr; Arrange &rarr; Selection Pane</em>) you can see every object&rsquo;s name. Hover any hyperlink in slideshow mode and the destination slide name appears as a tooltip &mdash; your built-in sanity check before students ever see it.
+          <strong>Each slide has a name &mdash; use it to verify your links</strong>
+          Every slide in the template is named (visible in the slide panel on the left). When you hover over any hyperlink in slideshow mode, the destination slide&rsquo;s name appears as a tooltip &mdash; so you can confirm exactly where a shape will send students before they ever see it.
         </div>
       </div>
 
@@ -1197,7 +1197,7 @@
       <div class="ppt-section">
         <span class="ppt-section-label">The final challenge</span>
         <h4>A keyboard students type on &mdash; one click at a time.</h4>
-        <p>After completing all checkpoints, students land on the Final Challenge: a slide showing blank letter boxes for the answer word, with clue letters pre-filled in their positions. A full QWERTY keyboard sits below. Students click each key in order, left to right, to spell out the word. Every key is a transparent shape with a hyperlink.</p>
+        <p>After completing all checkpoints, students land on the Final Challenge: a slide showing blank letter boxes for the answer word, with clue letters pre-filled in their positions. A full QWERTY keyboard sits below. Students click each key in order, left to right, to spell out the word. Each key has a transparent shape on top of it that contains the hyperlink &mdash; so just like the answer choices, you can move those shapes around without ever touching the links.</p>
 
         <div class="ppt-split">
           <div class="ppt-diagram">
@@ -1279,29 +1279,29 @@
             <ol class="ppt-steps">
               <li class="ppt-step">
                 <span class="ppt-step-n">1</span>
-                <span class="ppt-step-body"><strong>Choose your answer word.</strong> 6&ndash;10 letters works best. It should be a key term from your content &mdash; something students will recognize as meaningful.</span>
+                <span class="ppt-step-body"><strong>The template comes pre-wired.</strong> Every keyboard key already has a wrong-answer transparent shape on top of it, linking back to the current board slide. There is also one separate &ldquo;Correct&rdquo; shape sitting off to the side of the keyboard, linked to advance to the next slide.</span>
               </li>
               <li class="ppt-step">
                 <span class="ppt-step-n">2</span>
-                <span class="ppt-step-body"><strong>Identify the three clue positions.</strong> One letter is earned from each checkpoint. These slots are pre-filled in rust/orange. You decide which positions those are &mdash; spread them across the word so they offer a real hint.</span>
+                <span class="ppt-step-body"><strong>Type your word into the letter boxes</strong> using the transparent shape method &mdash; slide each shape aside, update the text box, slide it back. Leave the clue-letter slots (earned from checkpoints) in their styled format.</span>
               </li>
               <li class="ppt-step">
                 <span class="ppt-step-n">3</span>
-                <span class="ppt-step-body"><strong>Update the letter box text</strong> for each clue position using the transparent shape method. Change the displayed letter to match your word.</span>
+                <span class="ppt-step-body"><strong>There is one slide per letter students must type.</strong> On each slide, take the &ldquo;Correct&rdquo; shape from the side and drag it on top of the one key that should be correct for that position. That&rsquo;s it &mdash; every other key already has its wrong-answer shape in place.</span>
               </li>
               <li class="ppt-step">
                 <span class="ppt-step-n">4</span>
-                <span class="ppt-step-body"><strong>The keyboard shapes are pre-linked.</strong> For each &ldquo;board state&rdquo; slide (one per letter you fill in), one key links forward and all others link to the wrong-letter overlay. You only need to update which key is the &ldquo;correct&rdquo; one for each step.</span>
+                <span class="ppt-step-body"><strong>Work through the slides in order.</strong> Slide 1 of the challenge: place Correct on the first letter of your word. Slide 2: place Correct on the second letter. And so on. Only one correct shape per slide keeps students typing left to right.</span>
               </li>
               <li class="ppt-step">
                 <span class="ppt-step-n">5</span>
-                <span class="ppt-step-body"><strong>The wrong-letter overlay</strong> has a &ldquo;Back to board&rdquo; button that returns the student to the same board-state slide they came from. No progress is lost &mdash; they just try again.</span>
+                <span class="ppt-step-body"><strong>Wrong clicks show an overlay</strong> that tells students that letter doesn&rsquo;t fit and sends them back to the same board slide to try again. No progress lost &mdash; the correct letters they&rsquo;ve already typed stay filled in.</span>
               </li>
             </ol>
 
             <div class="ppt-callout">
               <strong>Tip: use Class Kit instead</strong>
-              If building the final challenge manually feels complex, the Class Kit AI builder handles all of this automatically &mdash; you just type your word and it wires every keyboard key to the right slide. The manual template is there for those who prefer full control.
+              If you&rsquo;d rather skip the manual setup entirely, Class Kit handles all of this automatically &mdash; type your word, and every keyboard shape is placed and linked for you. The manual template is there for those who want full control without AI.
             </div>
           </div>
         </div>
