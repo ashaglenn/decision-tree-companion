@@ -1,0 +1,2261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Interactive Decision Tree — Conference Companion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=DM+Sans:opsz,wght@9..40,300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper-0: #f7f2e8;
+    --paper-1: #f1ead9;
+    --paper-2: #ece2cb;
+    --paper-3: #e3d6b6;
+    --ink: #1e1a14;
+    --ink-2: #3a3127;
+    --ink-3: #6a5a45;
+    --rule: rgba(30, 26, 20, 0.14);
+    --rust: #b8451f;
+    --rust-soft: #efd6c4;
+    --rust-deep: #8c3315;
+    --serif: "Newsreader", "Iowan Old Style", Georgia, serif;
+    --sans: "DM Sans", "Helvetica Neue", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper-0);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---------- texture: subtle paper grain ---------- */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.5;
+    background-image:
+      radial-gradient(rgba(30,26,20,0.025) 1px, transparent 1px),
+      radial-gradient(rgba(30,26,20,0.018) 1px, transparent 1px);
+    background-size: 3px 3px, 7px 7px;
+    background-position: 0 0, 1px 1px;
+    mix-blend-mode: multiply;
+  }
+
+  .wrap { position: relative; z-index: 2; }
+
+  /* ---------- typography ---------- */
+  h1, h2, h3, h4 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01em; margin: 0; color: var(--ink); }
+  h1 { font-size: clamp(48px, 7vw, 96px); line-height: 1.02; letter-spacing: -0.025em; }
+  h2 { font-size: clamp(34px, 4.2vw, 56px); line-height: 1.05; letter-spacing: -0.018em; }
+  h3 { font-size: clamp(22px, 2.2vw, 30px); line-height: 1.15; }
+  p { margin: 0; text-wrap: pretty; }
+
+  .eyebrow, .dt-eyebrow, .tpl-num, .ped-card-label, .ped-rail-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rust);
+  }
+  .ink-eyebrow { color: var(--ink-3); }
+
+  /* ---------- top bar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in oklab, var(--paper-0) 88%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .topbar-inner {
+    max-width: 1280px; margin: 0 auto;
+    padding: 14px 40px;
+    display: flex; align-items: center; gap: 24px;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand-mark {
+    width: 28px; height: 28px; flex: 0 0 28px;
+    position: relative;
+  }
+  .brand-mark::before, .brand-mark::after {
+    content: ""; position: absolute; background: var(--ink);
+  }
+  .brand-mark::before { left: 50%; top: 0; bottom: 0; width: 1.5px; transform: translateX(-50%); }
+  .brand-mark::after { left: 0; right: 0; top: 50%; height: 1.5px; transform: translateY(-50%); background: var(--rust); }
+  .brand-mark span {
+    position: absolute; width: 7px; height: 7px; border-radius: 50%; background: var(--ink);
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+  }
+  .brand-text { font-family: var(--serif); font-size: 19px; letter-spacing: -0.01em; }
+  .topbar-nav { margin-left: auto; display: flex; gap: 28px; }
+  .topbar-nav a {
+    color: var(--ink-2); text-decoration: none; font-size: 14px;
+    border-bottom: 1px solid transparent; padding-bottom: 2px;
+    transition: color .15s, border-color .15s;
+  }
+  .topbar-nav a:hover { color: var(--rust); border-color: var(--rust); }
+  .topbar-nav a.nav-start {
+    color: var(--rust);
+    font-weight: 500;
+    border-bottom-color: var(--rust);
+    padding-bottom: 2px;
+  }
+  .topbar-nav a.nav-start:hover { color: var(--ink); border-bottom-color: var(--ink); }
+  html { scroll-behavior: smooth; }
+
+  /* ---------- sections ---------- */
+  section { max-width: 1280px; margin: 0 auto; padding: 110px 40px; position: relative; }
+  .section-head {
+    display: grid; grid-template-columns: 400px 1fr; gap: 56px;
+    margin-bottom: 64px; padding-bottom: 28px; border-bottom: 1px solid var(--rule);
+    align-items: end;
+  }
+  @media (max-width: 900px) {
+    .section-head { grid-template-columns: 1fr; gap: 24px; }
+  }
+  .section-head .number {
+    font-family: var(--mono); font-size: 13px; letter-spacing: 0.2em;
+    color: var(--rust); text-transform: uppercase;
+    min-width: 0;
+  }
+  .section-head .number .big {
+    display: block; font-family: var(--serif); font-size: clamp(60px, 6.8vw, 92px); line-height: 0.95; letter-spacing: -0.04em;
+    color: var(--ink); margin-top: 14px;
+    white-space: nowrap;
+    width: auto !important;
+  }
+  .section-head h2 { max-width: 22ch; }
+  .section-head .lede {
+    margin-top: 18px; font-size: 19px; color: var(--ink-2); max-width: 62ch;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero { padding: 80px 40px 60px; max-width: 1280px; margin: 0 auto; }
+  .hero-top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-3); padding-bottom: 24px; border-bottom: 1px solid var(--rule);
+  }
+  .hero-top span:nth-child(2) { color: var(--rust); }
+  .hero-title { padding: 56px 0 40px; }
+  .hero-title h1 .serif-i { font-style: italic; color: var(--rust); }
+  .hero-meta {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px; padding: 40px 0 0;
+    border-top: 1px solid var(--rule);
+  }
+  .hero-meta .col {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .hero-meta .col .k { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); }
+  .hero-meta .col .v { font-family: var(--serif); font-size: 22px; color: var(--ink); }
+  .hero-runner {
+    margin-top: 56px; padding: 22px 28px;
+    background: var(--paper-1); border-left: 3px solid var(--rust);
+    font-family: var(--serif); font-style: italic; font-size: 22px; line-height: 1.4; color: var(--ink-2);
+    max-width: 880px;
+  }
+  .hero-runner .pull { color: var(--rust); font-style: normal; font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; display: block; margin-bottom: 8px; font-weight: 500; }
+
+  .hero-cta {
+    display: flex; gap: 18px; margin-top: 40px; align-items: center; flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 13px 22px; border-radius: 999px;
+    font-family: var(--sans); font-size: 14px; font-weight: 500; letter-spacing: 0.02em;
+    border: 1px solid var(--ink); background: transparent; color: var(--ink);
+    cursor: pointer; text-decoration: none;
+    transition: background .15s, color .15s, border-color .15s, transform .1s;
+  }
+  .btn:hover { background: var(--ink); color: var(--paper-0); }
+  .btn:active { transform: translateY(1px); }
+  .btn--solid { background: var(--rust); border-color: var(--rust); color: var(--paper-0); }
+  .btn--solid:hover { background: var(--rust-deep); border-color: var(--rust-deep); color: var(--paper-0); }
+  .btn .arrow { font-family: var(--mono); }
+
+  /* ---------- DECISION TREE component ---------- */
+  .dt-shell {
+    background: var(--paper-1);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 44px 48px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .dt-shell::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--rust);
+  }
+  .dt-shell-head {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+  .dt-back-board {
+    margin-left: auto;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px; border-radius: 999px;
+    background: transparent; color: var(--ink-3);
+    border: 1px solid var(--rule);
+    font-family: var(--sans); font-size: 12px; font-weight: 500; letter-spacing: 0.02em;
+    cursor: pointer; transition: all .15s;
+  }
+  .dt-back-board:hover { background: var(--ink); color: var(--paper-0); border-color: var(--ink); }
+  .dt-back-board span { font-family: var(--mono); font-size: 13px; line-height: 1; }
+  .dt-progress { display: flex; gap: 6px; }
+  .dt-progress-tick {
+    display: flex; align-items: center; justify-content: center;
+    width: 44px; height: 28px; border: 1px solid var(--rule); border-radius: 2px;
+    font-family: var(--mono); font-size: 11px; color: var(--ink-3);
+    transition: all .2s;
+  }
+  .dt-progress-tick.is-done { background: var(--ink); color: var(--paper-0); border-color: var(--ink); }
+  .dt-progress-tick.is-current { background: var(--rust); color: var(--paper-0); border-color: var(--rust); }
+  .dt-context { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); }
+
+  .dt-question { padding: 36px 0 28px; }
+  .dt-question .dt-eyebrow { display: block; margin-bottom: 12px; }
+  .dt-question h3 { font-size: clamp(26px, 3vw, 36px); line-height: 1.15; max-width: 26ch; }
+  .dt-question--reflection { position: relative; }
+  .dt-question--reflection::before {
+    content: "";
+    position: absolute; left: -48px; top: 28px; bottom: 0;
+    width: 3px; background: var(--rust);
+  }
+  .dt-question--reflection .dt-eyebrow { color: var(--rust); }
+  .dt-reflection-hint {
+    margin-top: 14px; font-family: var(--serif); font-style: italic;
+    font-size: 17px; color: var(--ink-3); max-width: 56ch;
+  }
+
+  .dt-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 720px) { .dt-choices { grid-template-columns: 1fr; } }
+  .dt-choice {
+    text-align: left;
+    display: flex; align-items: center; gap: 14px;
+    padding: 18px 22px;
+    background: var(--paper-0);
+    border: 1px solid var(--rule); border-radius: 3px;
+    font-family: var(--serif); font-size: 19px; color: var(--ink);
+    cursor: pointer; transition: all .15s;
+  }
+  .dt-choice:hover:not(:disabled) { border-color: var(--ink); background: var(--paper-2); transform: translateY(-1px); }
+  .dt-choice:disabled { cursor: default; }
+  .dt-choice-marker {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 1px solid var(--rule);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 13px; flex: 0 0 26px;
+    background: transparent;
+  }
+  .dt-choice--picked-correct { background: #e8eadd; border-color: #6a7a3a; }
+  .dt-choice--picked-correct .dt-choice-marker { background: #6a7a3a; color: var(--paper-0); border-color: #6a7a3a; }
+  .dt-choice--picked-wrong { background: var(--rust-soft); border-color: var(--rust); }
+  .dt-choice--picked-wrong .dt-choice-marker { background: var(--rust); color: var(--paper-0); border-color: var(--rust); }
+  .dt-choice--reveal-correct { border-color: #6a7a3a; }
+  .dt-choice--reveal-correct .dt-choice-marker { background: #6a7a3a; color: var(--paper-0); border-color: #6a7a3a; }
+  .dt-choice--dimmed { opacity: 0.45; }
+
+  .dt-feedback {
+    margin-top: 28px; padding: 28px;
+    background: var(--paper-0); border-radius: 3px;
+    border: 1px solid var(--rule);
+    animation: feedback-in .35s ease-out;
+  }
+  @keyframes feedback-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .dt-feedback--correct { border-left: 3px solid #6a7a3a; }
+  .dt-feedback--wrong { border-left: 3px solid var(--rust); }
+  .dt-feedback-head {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 22px;
+  }
+  .dt-feedback-tag {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 5px 10px; border-radius: 2px;
+  }
+  .dt-feedback--correct .dt-feedback-tag { background: #6a7a3a; color: var(--paper-0); }
+  .dt-feedback--wrong .dt-feedback-tag { background: var(--rust); color: var(--paper-0); }
+  .dt-feedback-rule { flex: 1; height: 1px; background: var(--rule); }
+
+  .dt-feedback p { color: var(--ink-2); font-size: 17px; line-height: 1.6; }
+  .dt-feedback-why { font-family: var(--serif); font-size: 20px !important; line-height: 1.45 !important; color: var(--ink) !important; margin-bottom: 22px; }
+  .dt-feedback-label {
+    display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--rust); margin-bottom: 8px; font-weight: 500;
+  }
+  .dt-feedback-reflect, .dt-feedback-wouldwork {
+    padding: 18px 20px; background: var(--paper-1); border-radius: 3px; margin-top: 14px;
+  }
+  .dt-feedback-wouldwork { border-left: 2px solid var(--rust); }
+
+  .dt-feedback-foot { margin-top: 28px; display: flex; justify-content: flex-end; }
+  .dt-pill {
+    padding: 11px 20px; border-radius: 999px;
+    font-family: var(--sans); font-size: 13px; font-weight: 500; letter-spacing: 0.02em;
+    background: transparent; border: 1px solid var(--ink); color: var(--ink);
+    cursor: pointer; transition: all .15s;
+  }
+  .dt-pill:hover { background: var(--ink); color: var(--paper-0); }
+  .dt-pill--solid { background: var(--rust); border-color: var(--rust); color: var(--paper-0); }
+  .dt-pill--solid:hover { background: var(--rust-deep); border-color: var(--rust-deep); }
+
+  /* summary */
+  .dt-summary { padding: 16px 0; }
+  .dt-summary-head { padding-bottom: 28px; border-bottom: 1px solid var(--rule); margin-bottom: 28px; }
+  .dt-summary-head .dt-eyebrow { display: block; margin-bottom: 8px; }
+  .dt-summary-head h3 { font-size: 36px; margin-bottom: 12px; }
+  .dt-summary-score { font-family: var(--serif); font-style: italic; font-size: 20px; color: var(--ink-2); }
+  .dt-summary-list { list-style: none; padding: 0; margin: 0 0 32px; display: flex; flex-direction: column; gap: 12px; }
+  .dt-summary-list li {
+    display: grid; grid-template-columns: 56px 1fr; gap: 18px; align-items: start;
+    padding: 18px 20px; background: var(--paper-0); border-radius: 3px;
+    border-left: 3px solid var(--rule);
+  }
+  .dt-summary-list li.is-correct { border-left-color: #6a7a3a; }
+  .dt-summary-list li.is-wrong { border-left-color: var(--rust); }
+  .dt-summary-num { font-family: var(--mono); font-size: 13px; color: var(--ink-3); }
+  .dt-summary-q { font-family: var(--serif); font-size: 18px; color: var(--ink); margin-bottom: 6px; }
+  .dt-summary-a { font-size: 15px; color: var(--ink-2); display: flex; align-items: center; gap: 8px; }
+  .dt-summary-mark { display: inline-flex; width: 18px; height: 18px; border-radius: 50%; align-items: center; justify-content: center; font-size: 11px; font-family: var(--mono); }
+  .is-correct .dt-summary-mark { background: #6a7a3a; color: var(--paper-0); }
+  .is-wrong .dt-summary-mark { background: var(--rust); color: var(--paper-0); }
+
+  /* ---------- PEDAGOGY component ---------- */
+  .ped-shell {
+    display: grid;
+    grid-template-columns: 220px 1fr 280px;
+    gap: 40px;
+    align-items: start;
+  }
+  @media (max-width: 1000px) {
+    .ped-shell { grid-template-columns: 1fr; }
+  }
+  .ped-rail { display: flex; flex-direction: column; gap: 4px; }
+  .ped-rail-item {
+    display: grid; grid-template-columns: 38px 1fr; align-items: center;
+    gap: 14px; padding: 12px 0;
+    background: transparent; border: none; border-top: 1px solid var(--rule);
+    text-align: left; cursor: pointer; transition: all .15s;
+    position: relative;
+  }
+  .ped-rail-item:last-child { border-bottom: 1px solid var(--rule); }
+  .ped-rail-item.is-active { padding-left: 12px; }
+  .ped-rail-item.is-active::before {
+    content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 4px; height: 30px; background: var(--rust);
+  }
+  .ped-rail-num { font-family: var(--serif); font-size: 28px; color: var(--ink-3); transition: color .15s; }
+  .ped-tone--rust { color: var(--rust); }
+  .ped-tone--ink { color: var(--ink); }
+  .ped-rail-item.is-active .ped-rail-num { color: var(--rust); }
+  .ped-rail-label { color: var(--ink-2); }
+  .ped-rail-item.is-active .ped-rail-label { color: var(--ink); }
+
+  .ped-card {
+    background: var(--paper-1); border: 1px solid var(--rule); border-radius: 4px;
+    padding: 40px;
+    min-height: 360px;
+    display: flex; flex-direction: column;
+  }
+  .ped-card-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 20px; }
+  .ped-card-num { font-family: var(--serif); font-size: 56px; line-height: 1; letter-spacing: -0.02em; }
+  .ped-card-label { color: var(--rust); }
+  .ped-card-title { margin-bottom: 16px; font-size: clamp(24px, 2.6vw, 32px); max-width: 22ch; }
+  .ped-card-body { font-size: 18px; line-height: 1.55; color: var(--ink-2); max-width: 56ch; flex: 1; }
+  .ped-card-foot {
+    margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--rule);
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .ped-foot-kicker { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); }
+  .ped-dots { display: flex; gap: 6px; flex: 1; }
+  .ped-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rule); transition: background .2s; }
+  .ped-dot.is-done { background: var(--ink); }
+  .ped-dot.is-active { background: var(--rust); transform: scale(1.4); }
+
+  .ped-pull { display: flex; flex-direction: column; gap: 20px; }
+  .ped-pull-quote {
+    font-family: var(--serif); font-style: italic; font-size: 22px; line-height: 1.35;
+    color: var(--ink); border-left: 2px solid var(--rust); padding: 4px 0 4px 18px;
+  }
+  .ped-pull-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+  .ped-pull-list li {
+    padding: 14px 0; border-top: 1px solid var(--rule);
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .ped-pull-list li:last-child { border-bottom: 1px solid var(--rule); }
+  .ped-pull-list li span {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3);
+  }
+  .ped-pull-list li strong {
+    font-family: var(--serif); font-weight: 400; font-size: 19px; color: var(--ink);
+  }
+
+  /* ---------- TEMPLATES (image upload boxes) ---------- */
+  .tpl-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+  @media (max-width: 900px) { .tpl-grid { grid-template-columns: 1fr; } }
+  .tpl-card {
+    background: var(--paper-1);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: transform .15s, border-color .15s;
+  }
+  .tpl-card:hover { transform: translateY(-2px); border-color: var(--ink); }
+  .tpl-image {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background: var(--paper-2);
+    border-bottom: 1px solid var(--rule);
+  }
+  .tpl-image image-slot {
+    display: block;
+    width: 100%; height: 100%;
+  }
+  .tpl-image-num {
+    position: absolute; top: 14px; left: 14px;
+    background: var(--ink); color: var(--paper-0);
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em;
+    padding: 4px 8px; border-radius: 2px;
+    z-index: 2; pointer-events: none;
+  }
+  .tpl-meta {
+    padding: 24px 26px 26px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .tpl-num {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--rust);
+  }
+  .tpl-meta h3 {
+    font-family: var(--serif); font-size: 26px; line-height: 1.1; margin: 0;
+    color: var(--ink);
+  }
+  .tpl-cta {
+    margin-top: 4px;
+    display: inline-flex; align-items: center; gap: 10px;
+    align-self: flex-start;
+    padding: 10px 18px;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    text-decoration: none;
+    font-family: var(--sans); font-size: 13px; font-weight: 500; letter-spacing: 0.02em;
+    transition: all .15s;
+  }
+  .tpl-cta:hover { background: var(--rust); color: var(--paper-0); border-color: var(--rust); }
+  .tpl-cta span { font-family: var(--mono); }
+
+  /* ---------- CTA ---------- */
+  .cta-shell {
+    background: var(--ink); color: var(--paper-0); border-radius: 4px;
+    padding: 80px 64px; margin: 0 -40px;
+    position: relative; overflow: hidden;
+  }
+  .cta-shell::before {
+    content: ""; position: absolute; right: -100px; top: -100px;
+    width: 360px; height: 360px; border-radius: 50%;
+    background: var(--rust); opacity: 0.15;
+    filter: blur(60px);
+  }
+  .cta-shell h2 { color: var(--paper-0); max-width: 18ch; }
+  .cta-shell h2 em { color: var(--rust-soft); font-style: italic; }
+  .cta-shell .lede { color: rgba(247,242,232,0.75); max-width: 60ch; margin-top: 18px; font-size: 19px; }
+  .cta-inner { position: relative; z-index: 2; display: grid; grid-template-columns: 1.4fr 1fr; gap: 64px; align-items: end; }
+  @media (max-width: 900px) { .cta-inner { grid-template-columns: 1fr; } }
+  .cta-link {
+    display: block; padding: 28px 32px;
+    background: var(--paper-0); color: var(--ink); border-radius: 3px;
+    text-decoration: none;
+    transition: transform .15s, background .15s;
+  }
+  .cta-link:hover { transform: translateY(-2px); background: var(--rust-soft); }
+  .cta-link .domain { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--rust); }
+  .cta-link .name { font-family: var(--serif); font-size: 30px; line-height: 1.1; margin: 8px 0 4px; }
+  .cta-link .desc { font-size: 14px; color: var(--ink-2); }
+  .cta-link .go {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 22px; padding-top: 18px; border-top: 1px solid rgba(30,26,20,0.15);
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink);
+  }
+  .cta-link .go .arrow { color: var(--rust); }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    max-width: 1280px; margin: 0 auto;
+    padding: 60px 40px 40px;
+    border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 20px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3);
+  }
+  footer span:nth-child(2) { color: var(--rust); }
+
+  /* ---------- dt-chip + larger pill ---------- */
+  .dt-chip {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 5px 10px; border-radius: 2px;
+    background: var(--ink); color: var(--paper-0);
+  }
+  .dt-chip--cp { background: var(--rust); color: var(--paper-0); }
+  .dt-pill--lg { padding: 15px 28px; font-size: 14px; }
+
+  /* ---------- CHECKPOINT BOARD ---------- */
+  .dt-board { padding: 8px 0 16px; }
+  .dt-board-head { padding-bottom: 32px; margin-bottom: 36px; border-bottom: 1px solid var(--rule); }
+  .dt-board-head .dt-eyebrow { display: block; margin-bottom: 12px; }
+  .dt-board-head h3 { font-size: clamp(28px, 3.2vw, 40px); line-height: 1.15; max-width: 28ch; }
+  .dt-board-lede { margin-top: 16px; font-size: 18px; color: var(--ink-2); max-width: 64ch; line-height: 1.55; }
+
+  .dt-board-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  }
+  @media (max-width: 980px) { .dt-board-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 540px) { .dt-board-grid { grid-template-columns: 1fr; } }
+
+  .dt-cp {
+    background: var(--paper-0); border: 1px solid var(--rule); border-radius: 3px;
+    padding: 22px 22px 24px; display: flex; flex-direction: column; gap: 10px;
+    min-height: 220px;
+    position: relative;
+    transition: transform .15s, border-color .15s, background .15s;
+  }
+  .dt-cp--current { border-color: var(--rust); border-width: 2px; padding: 21px 21px 23px; background: var(--paper-1); }
+  .dt-cp--current::before {
+    content: "Now entering"; position: absolute; top: -10px; left: 16px;
+    background: var(--rust); color: var(--paper-0);
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 2px;
+  }
+  .dt-cp--done { background: #e8eadd; border-color: #6a7a3a; }
+  .dt-cp--locked { opacity: 0.55; }
+  .dt-cp--final { background: var(--ink); color: var(--paper-1); border-color: var(--ink); }
+  .dt-cp--final.dt-cp--current { background: var(--ink); border-color: var(--rust); }
+  .dt-cp--final .dt-cp-name, .dt-cp--final .dt-cp-blurb { color: var(--paper-1); }
+  .dt-cp--final.dt-cp--locked { opacity: 0.55; }
+
+  .dt-cp-top {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .dt-cp-num { color: var(--rust); }
+  .dt-cp--done .dt-cp-num { color: #6a7a3a; }
+  .dt-cp-status { color: var(--ink-3); }
+  .dt-cp--done .dt-cp-status { color: #6a7a3a; }
+  .dt-cp--current .dt-cp-status { color: var(--rust); }
+  .dt-cp--final .dt-cp-num, .dt-cp--final .dt-cp-status { color: var(--rust-soft); }
+
+  .dt-cp-name { font-family: var(--serif); font-size: 22px; line-height: 1.1; margin: 4px 0 2px; color: var(--ink); }
+  .dt-cp-blurb { font-size: 13px; line-height: 1.45; color: var(--ink-2); flex: 1; }
+
+  .dt-cp-clue {
+    margin-top: 8px; padding-top: 14px; border-top: 1px dashed var(--rule);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .dt-cp--final .dt-cp-clue { border-top-color: rgba(241, 234, 217, 0.25); }
+  .dt-cp-clue-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); }
+  .dt-cp--final .dt-cp-clue-label { color: var(--rust-soft); }
+  .dt-cp-clue-letter {
+    font-family: var(--serif); font-size: 38px; line-height: 1; color: var(--ink-3);
+    letter-spacing: -0.02em;
+    opacity: 1;
+  }
+  .dt-cp-clue-letter.is-earned {
+    color: var(--rust);
+    animation: clue-pop .5s cubic-bezier(.2,1.4,.4,1) forwards;
+  }
+  @keyframes clue-pop {
+    0% { transform: scale(0.3); opacity: 0; }
+    60% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .dt-cp-clue-counter { font-family: var(--mono); font-size: 14px; color: var(--rust-soft); }
+
+  .dt-board-foot { margin-top: 36px; display: flex; justify-content: flex-end; }
+
+  /* ---------- FINAL CHALLENGE ---------- */
+  .dt-final { padding: 8px 0 16px; }
+  .dt-final-head { padding-bottom: 28px; margin-bottom: 32px; border-bottom: 1px solid var(--rule); }
+  .dt-final-head .dt-eyebrow { display: block; margin-bottom: 12px; }
+  .dt-final-head h3 { font-size: clamp(28px, 3vw, 38px); max-width: 24ch; }
+  .dt-final-hint { margin-top: 12px; font-family: var(--serif); font-style: italic; font-size: 17px; color: var(--ink-3); max-width: 54ch; }
+
+  .dt-slots {
+    display: flex; flex-wrap: wrap; gap: 18px;
+    justify-content: center;
+    padding: 36px 16px;
+    background: var(--paper-0); border-radius: 3px;
+    border: 1px solid var(--rule);
+    margin-bottom: 32px;
+  }
+  .dt-slot-word { display: flex; gap: 6px; }
+  .dt-slot {
+    width: 42px; height: 58px;
+    background: var(--paper-1);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    transition: all .2s;
+  }
+  .dt-slot::after {
+    content: ""; position: absolute; left: 8px; right: 8px; bottom: 8px;
+    height: 1.5px; background: var(--ink-3); opacity: 0.4;
+  }
+  .dt-slot.is-prefilled {
+    background: var(--rust-soft);
+    border-color: var(--rust);
+  }
+  .dt-slot.is-prefilled::after { background: var(--rust); opacity: 1; }
+  .dt-slot.is-filled { background: var(--paper-2); border-color: var(--ink); }
+  .dt-slot.is-current {
+    border-color: var(--ink);
+    border-width: 2px;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(184, 69, 31, 0.15);
+    animation: slot-pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes slot-pulse {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(184, 69, 31, 0.15); }
+    50% { box-shadow: 0 0 0 8px rgba(184, 69, 31, 0.08); }
+  }
+  .dt-slot.just-filled { animation: slot-drop .4s cubic-bezier(.2,1.5,.4,1); }
+  @keyframes slot-drop {
+    0% { transform: translateY(-10px); opacity: 0.3; }
+    60% { transform: translateY(2px); opacity: 1; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  .dt-slot-letter {
+    font-family: var(--serif); font-size: 30px; line-height: 1; color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .dt-slot.is-prefilled .dt-slot-letter { color: var(--rust-deep); }
+  .dt-slot-tag {
+    position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+    background: var(--rust); color: var(--paper-0);
+    font-family: var(--mono); font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 2px 5px; border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  /* keyboard */
+  .dt-keyboard {
+    display: flex; flex-direction: column; gap: 8px; align-items: center;
+    padding: 18px;
+    background: var(--paper-2); border-radius: 3px;
+  }
+  .dt-keyrow { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+  .dt-key {
+    width: 44px; height: 50px;
+    background: var(--paper-0); color: var(--ink);
+    border: 1px solid var(--rule); border-bottom-width: 3px; border-radius: 3px;
+    font-family: var(--serif); font-size: 19px;
+    cursor: pointer;
+    transition: transform .08s, background .12s, border-color .12s;
+  }
+  .dt-key:hover:not(:disabled) { background: var(--paper-1); border-color: var(--ink); }
+  .dt-key:active:not(:disabled) { transform: translateY(2px); border-bottom-width: 1px; }
+  .dt-key:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* incorrect overlay */
+  .dt-overlay {
+    position: fixed; inset: 0;
+    background: rgba(30, 26, 20, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999;
+    animation: overlay-in .25s ease-out;
+    padding: 20px;
+  }
+  @keyframes overlay-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .dt-overlay-card {
+    background: var(--paper-0);
+    border: 1px solid var(--rust);
+    border-left: 4px solid var(--rust);
+    border-radius: 4px;
+    padding: 36px 40px;
+    max-width: 520px;
+    animation: overlay-card-in .35s cubic-bezier(.2,1.3,.4,1);
+  }
+  @keyframes overlay-card-in {
+    from { opacity: 0; transform: translateY(20px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .dt-overlay-card h4 { font-family: var(--serif); font-size: 26px; margin: 10px 0 16px; line-height: 1.2; }
+  .dt-overlay-card p { font-size: 16px; line-height: 1.55; color: var(--ink-2); margin-bottom: 24px; }
+  .dt-overlay-letter {
+    display: inline-block;
+    background: var(--rust); color: var(--paper-0);
+    font-family: var(--serif); font-size: 22px;
+    width: 36px; height: 36px; line-height: 36px; text-align: center;
+    border-radius: 3px;
+    margin: 0 4px;
+    vertical-align: middle;
+  }
+
+  /* won screen */
+  .dt-won { text-align: center; padding: 60px 20px 40px; }
+  .dt-won .dt-eyebrow { display: block; margin-bottom: 16px; color: var(--rust); }
+  .dt-won h3 { font-size: clamp(34px, 4vw, 52px); max-width: 18ch; margin: 0 auto 32px; line-height: 1.1; }
+  .dt-won-answer {
+    display: inline-flex; flex-direction: column; gap: 8px;
+    padding: 24px 36px; margin: 0 auto 32px;
+    background: var(--paper-0); border-radius: 4px;
+    border: 1px solid var(--rule);
+  }
+  .dt-won-answer span {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3);
+  }
+  .dt-won-answer strong {
+    font-family: var(--serif); font-weight: 400; font-size: 36px; letter-spacing: 0.04em; color: var(--rust);
+  }
+  .dt-won-body {
+    font-family: var(--serif); font-style: italic; font-size: 19px; line-height: 1.5;
+    color: var(--ink-2); max-width: 50ch; margin: 0 auto 32px;
+  }
+
+  /* ---------- HOW TO USE ---------- */
+  .how-shell {
+    margin-top: 72px;
+    padding-top: 56px;
+    border-top: 1px solid var(--rule);
+  }
+  .how-header {
+    display: flex; align-items: baseline; gap: 20px;
+    margin-bottom: 48px;
+  }
+  .how-header h3 {
+    font-size: clamp(26px, 2.8vw, 36px);
+  }
+  .how-header .eyebrow { flex-shrink: 0; }
+
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 40px;
+  }
+  @media (max-width: 860px) { .how-grid { grid-template-columns: 1fr; } }
+
+  .how-step {
+    background: var(--paper-1);
+    padding: 32px 30px 36px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .how-step-top {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .how-step-num {
+    font-family: var(--serif); font-size: 42px; line-height: 1;
+    letter-spacing: -0.03em; color: var(--ink-3);
+    flex-shrink: 0;
+  }
+  .how-step-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--rust);
+  }
+  .how-step h4 {
+    font-family: var(--serif); font-size: 21px; line-height: 1.2;
+    font-weight: 400; color: var(--ink); margin: 0;
+  }
+  .how-step p {
+    font-size: 15px; line-height: 1.6; color: var(--ink-2);
+  }
+  .how-step-details {
+    margin-top: 4px;
+    display: flex; flex-direction: column; gap: 7px;
+  }
+  .how-detail {
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 14px; color: var(--ink-2); line-height: 1.5;
+  }
+  .how-detail-bullet {
+    font-family: var(--mono); font-size: 11px; color: var(--rust);
+    flex-shrink: 0; margin-top: 2px;
+  }
+
+  .how-row2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 36px;
+  }
+  @media (max-width: 860px) { .how-row2 { grid-template-columns: 1fr; } }
+
+  .how-tip {
+    background: var(--paper-0);
+    padding: 28px 30px 32px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .how-tip .how-step-label { color: var(--ink-3); }
+  .how-tip h4 {
+    font-family: var(--serif); font-size: 19px; line-height: 1.2;
+    font-weight: 400; color: var(--ink); margin: 0;
+  }
+  .how-tip p { font-size: 15px; line-height: 1.6; color: var(--ink-2); }
+
+  .how-output {
+    background: var(--ink);
+    padding: 28px 30px 32px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .how-output .how-step-label { color: var(--rust-soft); }
+  .how-output h4 {
+    font-family: var(--serif); font-size: 19px; line-height: 1.2;
+    font-weight: 400; color: var(--paper-0); margin: 0;
+  }
+  .how-output p { font-size: 15px; line-height: 1.6; color: rgba(247,242,232,0.7); }
+  .how-output-stat {
+    display: flex; gap: 28px; margin-top: 8px; flex-wrap: wrap;
+  }
+  .how-stat {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .how-stat-n {
+    font-family: var(--serif); font-size: 36px; line-height: 1;
+    letter-spacing: -0.02em; color: var(--rust-soft);
+  }
+  .how-stat-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: rgba(247,242,232,0.5);
+  }
+
+  /* ---------- print ---------- */
+  @media print {
+    .topbar { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark"><span></span></div>
+        <div class="brand-text">Interactive Decision Tree</div>
+      </div>
+      <nav class="topbar-nav">
+        <a href="#top" class="nav-start">&#8593; Start here</a>
+        <a href="#try">Try it</a>
+        <a href="#pedagogy">Pedagogy</a>
+        <a href="#templates">Templates</a>
+        <a href="#build">Build your own</a>
+      </nav>
+    </div>
+  </header>
+
+  <a id="top"></a>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-top">
+      <span>Conference Companion &middot; 2026</span>
+      <span>Live demo enclosed</span>
+      <span>Higher-ed faculty</span>
+    </div>
+    <div class="hero-title">
+      <h1>A decision is a <span class="serif-i">teaching</span> moment &mdash; every branch, every wrong turn, every reflection.</h1>
+    </div>
+    <div class="hero-meta">
+      <div class="col">
+        <span class="k">Session</span>
+        <span class="v">Interactive Decision Tree</span>
+      </div>
+      <div class="col">
+        <span class="k">Format</span>
+        <span class="v">Live activity + walkthrough</span>
+      </div>
+      <div class="col">
+        <span class="k">Take-home</span>
+        <span class="v">Templates + AI builder</span>
+      </div>
+    </div>
+    <blockquote class="hero-runner">
+      <span class="pull">The premise</span>
+      Students make choices. Wrong choices aren&rsquo;t failures &mdash; they&rsquo;re the start of the next question. This site walks you through the activity, then hands you the tools to build your own.
+    </blockquote>
+    <div class="hero-cta">
+      <a href="#try" class="btn btn--solid">Try the activity <span class="arrow">&#8594;</span></a>
+      <a href="#pedagogy" class="btn">Read the pedagogy first</a>
+    </div>
+  </section>
+
+  <!-- TRY IT -->
+  <section id="try">
+    <div class="section-head">
+      <div class="number">Section 01<span class="big">Try</span></div>
+      <div>
+        <h2>An escape-room activity, before any theory.</h2>
+        <p class="lede">Three checkpoints, three letter clues, one final challenge. The topic is deliberately low-stakes &mdash; Marvel character trivia &mdash; so the <em>structure</em> of the learning loop is what stands out, not the content. Wrong answers route through a reflection question so students can&rsquo;t lose, only learn.</p>
+      </div>
+    </div>
+    <div id="dt-mount"></div>
+  </section>
+
+  <!-- PEDAGOGY -->
+  <section id="pedagogy">
+    <div class="section-head">
+      <div class="number">Section 02<span class="big">Why</span></div>
+      <div>
+        <h2>The constant feedback loop.</h2>
+        <p class="lede">Most assessments end at the answer. This activity ends at the next question. Each decision opens a five-step loop that turns a wrong answer into two correct mental models &mdash; one for here, one for somewhere else.</p>
+      </div>
+    </div>
+    <div id="ped-mount"></div>
+  </section>
+
+  <!-- TEMPLATES -->
+  <section id="templates">
+    <div class="section-head">
+      <div class="number">Section 03<span class="big">Design</span></div>
+      <div>
+        <h2>Three starter templates to design from.</h2>
+        <p class="lede">Upload a thumbnail for each card, then link it to a template file your students can use to begin building their own decision-tree activity.</p>
+      </div>
+    </div>
+    <div id="tpl-mount"></div>
+  </section>
+
+  <!-- BUILD CTA -->
+  <section id="build">
+    <div class="section-head">
+      <div class="number">Section 04<span class="big">Build</span></div>
+      <div>
+        <h2>Then build it with AI in the room.</h2>
+        <p class="lede">Class Kit takes your content &mdash; a pasted chapter, a scenario description, or your own questions &mdash; and generates a fully hyperlinked PowerPoint escape room, ready to run in slideshow mode. No design work. No slide-by-slide linking. Just your topic and a download.</p>
+      </div>
+    </div>
+
+    <div class="cta-shell">
+      <div class="cta-inner">
+        <div>
+          <h2>From <em>blank page</em> to a working decision tree in about an hour.</h2>
+          <p class="lede">The builder asks you for a topic, three things you want students to actually understand, and the misconceptions you keep correcting in office hours. It returns a draft tree with feedback, reflections, and reframes &mdash; ready for you to edit, reshape, and ship.</p>
+        </div>
+        <a class="cta-link" href="https://class-kit-six.vercel.app/" target="_blank" rel="noopener noreferrer">
+          <div class="domain">class-kit-six.vercel.app</div>
+          <div class="name">Class Kit</div>
+          <div class="desc">AI-assisted builder for interactive student activities.</div>
+          <div class="go">
+            <span>Open the builder</span>
+            <span class="arrow">&#8594;</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- HOW TO USE CLASS KIT -->
+    <div class="how-shell">
+      <div class="how-header">
+        <span class="eyebrow">How to use it</span>
+        <h3>From Class Kit to a working escape room in four steps.</h3>
+      </div>
+
+      <div class="how-grid">
+
+        <div class="how-step">
+          <div class="how-step-top">
+            <span class="how-step-num">1</span>
+            <span class="how-step-label">Choose your mode</span>
+          </div>
+          <h4>Select &ldquo;Escape Room&rdquo; on the Class Kit home screen.</h4>
+          <p>Class Kit builds two types of activity. Choose <strong>Escape Room</strong> for the checkpoint &rarr; clue &rarr; final challenge format you just experienced.</p>
+        </div>
+
+        <div class="how-step">
+          <div class="how-step-top">
+            <span class="how-step-num">2</span>
+            <span class="how-step-label">Add your content</span>
+          </div>
+          <h4>Give the AI something to work with &mdash; three ways to do it.</h4>
+          <div class="how-step-details">
+            <div class="how-detail">
+              <span class="how-detail-bullet">01</span>
+              <span><strong>From Material</strong> &mdash; paste or upload a chapter, article, or notes. The AI generates questions directly from the text.</span>
+            </div>
+            <div class="how-detail">
+              <span class="how-detail-bullet">02</span>
+              <span><strong>From Scenario</strong> &mdash; describe a real-world situation (a clinical case, a legal scenario, a lab procedure). Be specific: include the role, setting, and key decision points.</span>
+            </div>
+            <div class="how-detail">
+              <span class="how-detail-bullet">03</span>
+              <span><strong>My Questions</strong> &mdash; upload your own questions using the provided template if you already have the content written.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="how-step">
+          <div class="how-step-top">
+            <span class="how-step-num">3</span>
+            <span class="how-step-label">Configure the activity</span>
+          </div>
+          <h4>Set the structure, then pick your final challenge word.</h4>
+          <div class="how-step-details">
+            <div class="how-detail">
+              <span class="how-detail-bullet">&mdash;</span>
+              <span><strong>Checkpoints</strong>: 1, 2, or 3 (default is 3)</span>
+            </div>
+            <div class="how-detail">
+              <span class="how-detail-bullet">&mdash;</span>
+              <span><strong>Questions each</strong>: 2, 3, or 4 per checkpoint</span>
+            </div>
+            <div class="how-detail">
+              <span class="how-detail-bullet">&mdash;</span>
+              <span><strong>Final Challenge Word</strong>: a key term students spell out letter by letter after earning clues (6&ndash;10 letters works best &mdash; e.g. STENOSIS, CARDIAC, OSMOSIS)</span>
+            </div>
+            <div class="how-detail">
+              <span class="how-detail-bullet">&mdash;</span>
+              <span><strong>Orientation</strong>: landscape (16:9) or portrait (8.5&times;11)</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.how-grid -->
+
+      <div class="how-row2">
+
+        <div class="how-tip">
+          <span class="how-step-label">Step 4 &mdash; Download &amp; run</span>
+          <h4>Click &ldquo;Generate Escape Room,&rdquo; then open the file in PowerPoint.</h4>
+          <p>Run the file as a slideshow &mdash; all the hyperlinks, keyboard keys, and checkpoint buttons are clickable in presentation mode. Share the file with students directly, post it to your LMS, or project it in class.</p>
+          <p style="margin-top:8px; font-family: var(--serif); font-style: italic; color: var(--ink-3); font-size: 15px;">No login. No account. Click generate, download, done.</p>
+        </div>
+
+        <div class="how-output">
+          <span class="how-step-label">What you get</span>
+          <h4>A fully wired, ready-to-run PowerPoint escape room.</h4>
+          <p>Every slide is pre-linked. Wrong answers route to reflection questions. Correct reflections loop back to the original. Earned clues unlock the keyboard final challenge. Nothing to configure in PowerPoint.</p>
+          <div class="how-output-stat">
+            <div class="how-stat">
+              <span class="how-stat-n">108</span>
+              <span class="how-stat-label">Slides generated</span>
+            </div>
+            <div class="how-stat">
+              <span class="how-stat-n">3</span>
+              <span class="how-stat-label">Checkpoints</span>
+            </div>
+            <div class="how-stat">
+              <span class="how-stat-n">~$0.03</span>
+              <span class="how-stat-label">AI cost per activity</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.how-row2 -->
+
+    </div><!-- /.how-shell -->
+
+  </section>
+
+  <footer>
+    <span>Interactive Decision Tree &middot; Conference Companion 2026</span>
+    <span>Try &#8594; reflect &#8594; build</span>
+    <span>Designed for higher-ed faculty</span>
+  </footer>
+
+</div>
+
+<!-- React + Babel -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+
+<!-- image-slot custom element (inlined) -->
+<script>
+(() => {
+  const MAX_DIM = 1200;
+  const ACCEPT = ['image/png', 'image/jpeg', 'image/webp', 'image/avif'];
+
+  const subs = new Set();
+  let slots = {};
+  const tombstones = new Set();
+  let loaded = false;
+  let loadP = null;
+
+  function load() {
+    if (loadP) return loadP;
+    loadP = fetch('.image-slots.state.json')
+      .then(r => r.ok ? r.json() : null)
+      .then(j => {
+        if (j && typeof j === 'object') {
+          const merged = Object.assign({}, j, slots);
+          for (const k in slots) {
+            if (merged[k] && !merged[k].u && j[k]) {
+              merged[k].u = typeof j[k] === 'string' ? j[k] : j[k].u;
+            }
+          }
+          for (const id of tombstones) delete merged[id];
+          slots = merged;
+        }
+        tombstones.clear();
+      })
+      .catch(() => {})
+      .then(() => { loaded = true; subs.forEach(fn => fn()); });
+    return loadP;
+  }
+
+  let saving = false, saveDirty = false;
+  function save() {
+    if (saving) { saveDirty = true; return; }
+    const w = window.omelette && window.omelette.writeFile;
+    if (!w) return;
+    saving = true;
+    Promise.resolve(w('.image-slots.state.json', JSON.stringify(slots)))
+      .catch(() => {})
+      .then(() => { saving = false; if (saveDirty) { saveDirty = false; save(); } });
+  }
+
+  const S_MAX = 5;
+  const clampS = s => Math.max(1, Math.min(S_MAX, s));
+
+  function getSlot(id) {
+    const v = slots[id];
+    if (!v) return null;
+    return typeof v === 'string' ? { u: v, s: 1, x: 0, y: 0 } : v;
+  }
+
+  function setSlot(id, val) {
+    if (!id) return;
+    if (val) { slots[id] = val; tombstones.delete(id); }
+    else { delete slots[id]; if (!loaded) tombstones.add(id); }
+    subs.forEach(fn => fn());
+    if (loaded) save(); else load().then(save);
+  }
+
+  async function toDataUrl(file, targetW) {
+    const bitmap = await createImageBitmap(file);
+    try {
+      const cap = Math.min(MAX_DIM, Math.max(1, Math.round(targetW * 2)) || MAX_DIM);
+      const scale = Math.min(1, cap / Math.max(bitmap.width, bitmap.height));
+      const w = Math.max(1, Math.round(bitmap.width * scale));
+      const h = Math.max(1, Math.round(bitmap.height * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
+      return canvas.toDataURL('image/webp', 0.85);
+    } finally {
+      bitmap.close && bitmap.close();
+    }
+  }
+
+  const stylesheet =
+    ':host{display:inline-block;position:relative;vertical-align:top;' +
+    '  font:13px/1.3 system-ui,-apple-system,sans-serif;color:rgba(0,0,0,.55);width:240px;height:160px}' +
+    '.frame{position:absolute;inset:0;overflow:hidden;background:rgba(0,0,0,.04)}' +
+    '.frame img{position:absolute;max-width:none;transform:translate(-50%,-50%);' +
+    '  -webkit-user-drag:none;user-select:none;touch-action:none}' +
+    '.spill{position:absolute;transform:translate(-50%,-50%);display:none;z-index:1;' +
+    '  cursor:grab;touch-action:none}' +
+    ':host([data-panning]) .spill{cursor:grabbing}' +
+    '.spill .ghost{position:absolute;inset:0;width:100%;height:100%;opacity:.35;' +
+    '  pointer-events:none;-webkit-user-drag:none;user-select:none;' +
+    '  box-shadow:0 0 0 1px rgba(0,0,0,.2),0 12px 32px rgba(0,0,0,.2)}' +
+    '.spill .handle{position:absolute;width:12px;height:12px;border-radius:50%;' +
+    '  background:#fff;box-shadow:0 0 0 1.5px #c96442,0 1px 3px rgba(0,0,0,.3);' +
+    '  transform:translate(-50%,-50%)}' +
+    '.spill .handle[data-c=nw]{left:0;top:0;cursor:nwse-resize}' +
+    '.spill .handle[data-c=ne]{left:100%;top:0;cursor:nesw-resize}' +
+    '.spill .handle[data-c=sw]{left:0;top:100%;cursor:nesw-resize}' +
+    '.spill .handle[data-c=se]{left:100%;top:100%;cursor:nwse-resize}' +
+    ':host([data-reframe]){z-index:10}' +
+    ':host([data-reframe]) .spill{display:block}' +
+    ':host([data-reframe]) .frame{box-shadow:0 0 0 2px #c96442}' +
+    '.empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;' +
+    '  justify-content:center;gap:6px;text-align:center;padding:12px;box-sizing:border-box;' +
+    '  cursor:pointer;user-select:none}' +
+    '.empty svg{opacity:.45}' +
+    '.empty .cap{max-width:90%;font-weight:500;letter-spacing:.01em}' +
+    '.empty .sub{font-size:11px}' +
+    '.empty .sub u{text-underline-offset:2px;text-decoration-color:rgba(0,0,0,.25)}' +
+    '.empty:hover .sub u{color:rgba(0,0,0,.75);text-decoration-color:currentColor}' +
+    ':host([data-over]) .frame{outline:2px solid #c96442;outline-offset:-2px;' +
+    '  background:rgba(201,100,66,.10)}' +
+    '.ring{position:absolute;inset:0;pointer-events:none;border:1.5px dashed rgba(0,0,0,.25);' +
+    '  transition:border-color .12s}' +
+    ':host([data-over]) .ring{border-color:#c96442}' +
+    ':host([data-filled]) .ring{display:none}' +
+    '.ctl{position:absolute;top:100%;left:50%;transform:translateX(-50%);padding-top:8px;' +
+    '  display:flex;gap:6px;opacity:0;pointer-events:none;transition:opacity .12s;z-index:2;' +
+    '  white-space:nowrap}' +
+    ':host([data-filled][data-editable]:hover) .ctl,:host([data-reframe]) .ctl' +
+    '  {opacity:1;pointer-events:auto}' +
+    '.ctl button{appearance:none;border:0;border-radius:6px;padding:5px 10px;cursor:pointer;' +
+    '  background:rgba(0,0,0,.65);color:#fff;font:11px/1 system-ui,-apple-system,sans-serif;' +
+    '  backdrop-filter:blur(6px)}' +
+    '.ctl button:hover{background:rgba(0,0,0,.8)}' +
+    '.err{position:absolute;left:8px;bottom:8px;right:8px;color:#b3261e;font-size:11px;' +
+    '  background:rgba(255,255,255,.85);padding:4px 6px;border-radius:5px;pointer-events:none}';
+
+  const icon =
+    '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
+    '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>' +
+    '<path d="m21 15-5-5L5 21"/></svg>';
+
+  class ImageSlot extends HTMLElement {
+    static get observedAttributes() {
+      return ['shape', 'radius', 'mask', 'fit', 'position', 'placeholder', 'src', 'id'];
+    }
+    constructor() {
+      super();
+      const root = this.attachShadow({ mode: 'open' });
+      root.innerHTML =
+        '<style>' + stylesheet + '</style>' +
+        '<div class="frame" part="frame">' +
+        '  <img part="image" alt="" draggable="false" style="display:none">' +
+        '  <div class="empty" part="empty">' + icon +
+        '    <div class="cap"></div>' +
+        '    <div class="sub">or <u>browse files</u></div></div>' +
+        '  <div class="ring" part="ring"></div>' +
+        '</div>' +
+        '<div class="spill">' +
+        '  <img class="ghost" alt="" draggable="false">' +
+        '  <div class="handle" data-c="nw"></div><div class="handle" data-c="ne"></div>' +
+        '  <div class="handle" data-c="sw"></div><div class="handle" data-c="se"></div>' +
+        '</div>' +
+        '<div class="ctl"><button data-act="replace">Replace</button>' +
+        '  <button data-act="clear">Remove</button></div>' +
+        '<input type="file" accept="' + ACCEPT.join(',') + '" hidden>';
+      this._frame = root.querySelector('.frame');
+      this._ring = root.querySelector('.ring');
+      this._img = root.querySelector('.frame img');
+      this._empty = root.querySelector('.empty');
+      this._cap = root.querySelector('.cap');
+      this._sub = root.querySelector('.sub');
+      this._spill = root.querySelector('.spill');
+      this._ghost = root.querySelector('.ghost');
+      this._err = null;
+      this._input = root.querySelector('input');
+      this._depth = 0;
+      this._gen = 0;
+      this._view = { s: 1, x: 0, y: 0 };
+      this._subFn = () => this._render();
+      this._empty.addEventListener('click', () => this._input.click());
+      root.addEventListener('click', e => {
+        const act = e.target && e.target.getAttribute && e.target.getAttribute('data-act');
+        if (act === 'replace') { this._exitReframe(true); this._input.click(); }
+        if (act === 'clear') {
+          this._exitReframe(false);
+          this._gen++;
+          this._local = null;
+          if (this.id) setSlot(this.id, null); else this._render();
+        }
+      });
+      this._input.addEventListener('change', () => {
+        const f = this._input.files && this._input.files[0];
+        if (f) this._ingest(f);
+        this._input.value = '';
+      });
+      this._img.addEventListener('load', () => this._applyView());
+      this.addEventListener('dblclick', e => {
+        if (!this.hasAttribute('data-editable') || !this._reframes()) return;
+        e.preventDefault();
+        if (this.hasAttribute('data-reframe')) this._exitReframe(true);
+        else this._enterReframe();
+      });
+      this._spill.addEventListener('pointerdown', e => {
+        if (e.button !== 0 || !this.hasAttribute('data-reframe')) return;
+        e.preventDefault(); e.stopPropagation();
+        this._spill.setPointerCapture(e.pointerId);
+        const rect = this.getBoundingClientRect();
+        const fw = rect.width || 1, fh = rect.height || 1;
+        const corner = e.target.getAttribute && e.target.getAttribute('data-c');
+        let move;
+        if (corner) {
+          const iw = this._img.naturalWidth || 1, ih = this._img.naturalHeight || 1;
+          const base = Math.max(fw / iw, fh / ih);
+          const sx = corner.includes('e') ? 1 : -1;
+          const sy = corner.includes('s') ? 1 : -1;
+          const s0 = this._view.s;
+          const w0 = iw * base * s0, h0 = ih * base * s0;
+          const cx0 = (50 + this._view.x) / 100 * fw;
+          const cy0 = (50 + this._view.y) / 100 * fh;
+          const ox = cx0 - sx * w0 / 2, oy = cy0 - sy * h0 / 2;
+          const diag0 = Math.hypot(w0, h0);
+          const ux = sx * w0 / diag0, uy = sy * h0 / diag0;
+          move = ev => {
+            const proj = (ev.clientX - rect.left - ox) * ux + (ev.clientY - rect.top - oy) * uy;
+            const s = clampS(s0 * proj / diag0);
+            const d = diag0 * s / s0;
+            this._view.s = s;
+            this._view.x = (ox + ux * d / 2) / fw * 100 - 50;
+            this._view.y = (oy + uy * d / 2) / fh * 100 - 50;
+            this._clampView(); this._applyView();
+          };
+        } else {
+          this.setAttribute('data-panning', '');
+          const start = { px: e.clientX, py: e.clientY, x: this._view.x, y: this._view.y };
+          move = ev => {
+            this._view.x = start.x + (ev.clientX - start.px) / fw * 100;
+            this._view.y = start.y + (ev.clientY - start.py) / fh * 100;
+            this._clampView(); this._applyView();
+          };
+        }
+        const up = () => {
+          try { this._spill.releasePointerCapture(e.pointerId); } catch {}
+          this._spill.removeEventListener('pointermove', move);
+          this._spill.removeEventListener('pointerup', up);
+          this._spill.removeEventListener('pointercancel', up);
+          this.removeAttribute('data-panning');
+          this._dragUp = null;
+        };
+        this._dragUp = up;
+        this._spill.addEventListener('pointermove', move);
+        this._spill.addEventListener('pointerup', up);
+        this._spill.addEventListener('pointercancel', up);
+      });
+      this.addEventListener('wheel', e => {
+        if (!this.hasAttribute('data-reframe')) return;
+        e.preventDefault();
+        const r = this.getBoundingClientRect();
+        const cx = (e.clientX - r.left) / r.width * 100 - 50;
+        const cy = (e.clientY - r.top) / r.height * 100 - 50;
+        const prev = this._view.s;
+        const next = clampS(prev * Math.pow(1.0015, -e.deltaY));
+        if (next === prev) return;
+        const k = next / prev;
+        this._view.s = next;
+        this._view.x = cx * (1 - k) + this._view.x * k;
+        this._view.y = cy * (1 - k) + this._view.y * k;
+        this._clampView(); this._applyView();
+      }, { passive: false });
+    }
+    connectedCallback() {
+      this.addEventListener('dragenter', this);
+      this.addEventListener('dragover', this);
+      this.addEventListener('dragleave', this);
+      this.addEventListener('drop', this);
+      subs.add(this._subFn);
+      this._ro = new ResizeObserver(() => this._render());
+      this._ro.observe(this);
+      load();
+      this._render();
+    }
+    disconnectedCallback() {
+      subs.delete(this._subFn);
+      this.removeEventListener('dragenter', this);
+      this.removeEventListener('dragover', this);
+      this.removeEventListener('dragleave', this);
+      this.removeEventListener('drop', this);
+      if (this._ro) { this._ro.disconnect(); this._ro = null; }
+      this._exitReframe(false);
+    }
+    _enterReframe() {
+      if (this.hasAttribute('data-reframe')) return;
+      this.setAttribute('data-reframe', '');
+      this._applyView();
+      this._outside = e => {
+        if (e.composedPath && e.composedPath().includes(this)) return;
+        this._exitReframe(true);
+      };
+      this._esc = e => { if (e.key === 'Escape') this._exitReframe(true); };
+      document.addEventListener('pointerdown', this._outside, true);
+      document.addEventListener('keydown', this._esc, true);
+    }
+    _exitReframe(commit) {
+      if (!this.hasAttribute('data-reframe')) return;
+      if (this._dragUp) this._dragUp();
+      this.removeAttribute('data-reframe');
+      this.removeAttribute('data-panning');
+      if (this._outside) document.removeEventListener('pointerdown', this._outside, true);
+      if (this._esc) document.removeEventListener('keydown', this._esc, true);
+      this._outside = this._esc = null;
+      if (commit) this._commitView();
+    }
+    attributeChangedCallback() { if (this.shadowRoot) this._render(); }
+    handleEvent(e) {
+      if (e.type === 'dragenter' || e.type === 'dragover') {
+        e.preventDefault(); e.stopPropagation();
+        if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+        if (e.type === 'dragenter') this._depth++;
+        this.setAttribute('data-over', '');
+      } else if (e.type === 'dragleave') {
+        if (--this._depth <= 0) { this._depth = 0; this.removeAttribute('data-over'); }
+      } else if (e.type === 'drop') {
+        e.preventDefault(); e.stopPropagation();
+        this._depth = 0; this.removeAttribute('data-over');
+        const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+        if (f) this._ingest(f);
+      }
+    }
+    async _ingest(file) {
+      this._setError(null);
+      if (!file || ACCEPT.indexOf(file.type) < 0) {
+        this._setError('Drop a PNG, JPEG, WebP, or AVIF image.');
+        return;
+      }
+      const gen = ++this._gen;
+      try {
+        const w = this.clientWidth || this.offsetWidth || MAX_DIM;
+        const url = await toDataUrl(file, w);
+        if (gen !== this._gen) return;
+        this._exitReframe(false);
+        const val = { u: url, s: 1, x: 0, y: 0 };
+        setSlot(this.id || '', val);
+        if (!this.id) { this._local = val; this._render(); }
+      } catch (err) {
+        if (gen !== this._gen) return;
+        this._setError('Could not read that image.');
+      }
+    }
+    _setError(msg) {
+      if (this._err) { this._err.remove(); this._err = null; }
+      if (!msg) return;
+      const d = document.createElement('div');
+      d.className = 'err'; d.textContent = msg;
+      this.shadowRoot.appendChild(d);
+      this._err = d;
+      setTimeout(() => { if (this._err === d) { d.remove(); this._err = null; } }, 3000);
+    }
+    _reframes() {
+      return this.hasAttribute('data-filled') &&
+        (this.getAttribute('fit') || 'cover') === 'cover';
+    }
+    _geom() {
+      const iw = this._img.naturalWidth, ih = this._img.naturalHeight;
+      const fw = this.clientWidth, fh = this.clientHeight;
+      if (!iw || !ih || !fw || !fh) return null;
+      return { iw, ih, fw, fh, base: Math.max(fw / iw, fh / ih) };
+    }
+    _clampView() {
+      const g = this._geom();
+      if (!g) return;
+      const mx = Math.max(0, (g.iw * g.base * this._view.s / g.fw - 1) * 50);
+      const my = Math.max(0, (g.ih * g.base * this._view.s / g.fh - 1) * 50);
+      this._view.x = Math.max(-mx, Math.min(mx, this._view.x));
+      this._view.y = Math.max(-my, Math.min(my, this._view.y));
+    }
+    _applyView() {
+      const g = this._geom();
+      const fit = this.getAttribute('fit') || 'cover';
+      if (fit !== 'cover' || !g) {
+        this._img.style.width = '100%'; this._img.style.height = '100%';
+        this._img.style.left = '50%'; this._img.style.top = '50%';
+        this._img.style.objectFit = fit;
+        this._img.style.objectPosition = this.getAttribute('position') || '50% 50%';
+        return;
+      }
+      const k = g.base * this._view.s;
+      const w = (g.iw * k / g.fw * 100) + '%';
+      const h = (g.ih * k / g.fh * 100) + '%';
+      const l = (50 + this._view.x) + '%';
+      const t = (50 + this._view.y) + '%';
+      this._img.style.width = w; this._img.style.height = h;
+      this._img.style.left = l; this._img.style.top = t;
+      this._img.style.objectFit = '';
+      this._spill.style.width = w; this._spill.style.height = h;
+      this._spill.style.left = l; this._spill.style.top = t;
+    }
+    _commitView() {
+      const v = { s: this._view.s, x: this._view.x, y: this._view.y };
+      if (this._userUrl) v.u = this._userUrl;
+      if (this.id) setSlot(this.id, v);
+      else { this._local = v; }
+    }
+    _render() {
+      const mask = this.getAttribute('mask');
+      const shape = (this.getAttribute('shape') || 'rounded').toLowerCase();
+      let radius = '';
+      if (shape === 'circle') radius = '50%';
+      else if (shape === 'pill') radius = '9999px';
+      else if (shape === 'rounded') {
+        const n = parseFloat(this.getAttribute('radius'));
+        radius = (Number.isFinite(n) ? n : 12) + 'px';
+      }
+      this._frame.style.borderRadius = mask ? '' : radius;
+      this._frame.style.clipPath = mask || '';
+      this._ring.style.borderRadius = mask ? '' : radius;
+      this._ring.style.display = mask ? 'none' : '';
+      const editable = !!(window.omelette && window.omelette.writeFile);
+      this.toggleAttribute('data-editable', editable);
+      this._sub.style.display = editable ? '' : 'none';
+      let stored = this.id ? getSlot(this.id) : this._local;
+      if (stored && stored.u && !/^data:image\//i.test(stored.u)) stored = null;
+      const srcAttr = this.getAttribute('src') || '';
+      this._userUrl = (stored && stored.u) || null;
+      const url = this._userUrl || srcAttr;
+      if (!this.hasAttribute('data-reframe')) {
+        this._view = {
+          s: stored && Number.isFinite(stored.s) ? clampS(stored.s) : 1,
+          x: stored && Number.isFinite(stored.x) ? stored.x : 0,
+          y: stored && Number.isFinite(stored.y) ? stored.y : 0,
+        };
+      }
+      this._cap.textContent = this.getAttribute('placeholder') || 'Drop an image';
+      if (url) {
+        if (this._img.getAttribute('src') !== url) {
+          this._img.src = url;
+          this._ghost.src = url;
+        }
+        this._img.style.display = 'block';
+        this._empty.style.display = 'none';
+        this.setAttribute('data-filled', '');
+        this._clampView(); this._applyView();
+      } else {
+        this._img.style.display = 'none';
+        this._img.removeAttribute('src');
+        this._ghost.removeAttribute('src');
+        this._empty.style.display = 'flex';
+        this.removeAttribute('data-filled');
+      }
+    }
+  }
+
+  if (!customElements.get('image-slot')) {
+    customElements.define('image-slot', ImageSlot);
+  }
+})();
+</script>
+
+<!-- Decision Tree component -->
+<script type="text/babel">
+/* Marvel Trivia escape-room decision tree */
+const { useState, useEffect, useRef, useMemo } = React;
+
+const FINAL_PROMPT = "What is Black Widow's real name?";
+const FINAL_ANSWER = "NATASHA";
+
+const CHECKPOINTS = [
+  {
+    name: "Marvel 101",
+    blurb: "Origins, identities, the basics of the canon.",
+    clueLetter: "N",
+    cluePosition: 0,
+    clueDescription: "first letter",
+    questions: [
+      {
+        prompt: "Who is Tony Stark's superhero alter ego?",
+        correct: { label: "Iron Man", why: "Tony Stark builds the Iron Man armor himself — first in a cave from a box of scraps, then refined as Stark Industries’ signature suit." },
+        wrong: {
+          label: "War Machine",
+          why: "War Machine is the alter ego of James “Rhodey” Rhodes — not Tony.",
+          reflection: {
+            prompt: "Who actually pilots the War Machine armor?",
+            correct: { label: "James “Rhodey” Rhodes", why: "Rhodey is the pilot. Tony built the suit and handed it off; the person inside the armor defines the alter ego." },
+            wrong:   { label: "Tony Stark", why: "Tony designed the War Machine suit, but he doesn’t wear it — he stays in his own armor. The builder and the pilot aren’t always the same person." }
+          }
+        }
+      },
+      {
+        prompt: "What is the source of Captain America’s enhanced abilities?",
+        correct: { label: "Super-Soldier Serum", why: "Dr. Erskine’s serum, administered during WWII’s Project Rebirth, amplifies Steve Rogers’ existing qualities — a deliberate, supervised transformation." },
+        wrong: {
+          label: "Gamma radiation",
+          why: "Gamma radiation is a different Avenger’s origin. Steve Rogers’ transformation is biochemical, controlled, and intentional.",
+          reflection: {
+            prompt: "Whose powers come from gamma radiation exposure?",
+            correct: { label: "Bruce Banner (Hulk)", why: "Banner was caught in a gamma bomb experiment gone wrong — the opposite of Cap’s controlled procedure." },
+            wrong:   { label: "Steve Rogers", why: "Rogers received Erskine’s super-soldier serum in a planned procedure. Gamma radiation isn’t part of his story — that’s Banner." }
+          }
+        }
+      },
+      {
+        prompt: "What is the name of Wakanda’s signature metal?",
+        correct: { label: "Vibranium", why: "Vibranium is the meteoric metal that absorbs kinetic energy — the foundation of Wakanda’s economy, Cap’s shield, and the Black Panther suit." },
+        wrong: {
+          label: "Adamantium",
+          why: "Adamantium is a Marvel metal, but it belongs to a different storyline — the X-Men. It isn’t mined in Wakanda.",
+          reflection: {
+            prompt: "Which character is adamantium most associated with?",
+            correct: { label: "Wolverine", why: "Adamantium is bonded to Wolverine’s skeleton and claws — the Weapon X experiment." },
+            wrong:   { label: "Black Panther", why: "Black Panther’s suit is woven from vibranium. Both metals are nearly indestructible but they live in different corners of Marvel canon." }
+          }
+        }
+      }
+    ]
+  },
+  {
+    name: "The Infinity Saga",
+    blurb: "Stones, snaps, and the cosmic ladder.",
+    clueLetter: "T",
+    cluePosition: 2,
+    clueDescription: "third letter",
+    questions: [
+      {
+        prompt: "Which Infinity Stone controls time?",
+        correct: { label: "The Time Stone (green)", why: "Set in the Eye of Agamotto, the Time Stone lets Doctor Strange rewind, accelerate, and loop time — the basis of the Dormammu bargain." },
+        wrong: {
+          label: "The Space Stone (blue)",
+          why: "The Space Stone bends distance, not duration. It’s hidden inside the Tesseract.",
+          reflection: {
+            prompt: "What does the Space Stone actually do?",
+            correct: { label: "Opens portals across distance", why: "The Space Stone lets the user move instantly between two points — think Loki’s portals over New York." },
+            wrong:   { label: "Rewinds or accelerates time", why: "That’s the Time Stone. Physics bundles space-time together, but Marvel splits them into two distinct powers." }
+          }
+        }
+      },
+      {
+        prompt: "Who snaps away half of all life with the Infinity Gauntlet?",
+        correct: { label: "Thanos", why: "At the end of Infinity War, Thanos collects all six stones and executes the snap — the climactic act of the saga." },
+        wrong: {
+          label: "Hela",
+          why: "Hela is a major villain, but she belongs to Thor: Ragnarok and never wields the Infinity Gauntlet.",
+          reflection: {
+            prompt: "What is Hela the goddess of?",
+            correct: { label: "Death", why: "Hela is Asgard’s firstborn and goddess of death — her power is over endings, not over cosmic balance." },
+            wrong:   { label: "The universe at large", why: "Hela is bound to Asgard and Odin’s bloodline. Thanos is the cosmic threat; Hela is a planetary one." }
+          }
+        }
+      },
+      {
+        prompt: "Who sacrifices themselves with the final snap to defeat Thanos?",
+        correct: { label: "Tony Stark / Iron Man", why: "Tony seizes the stones from Thanos and snaps with the words “I am Iron Man” — a fatal act that closes his arc." },
+        wrong: {
+          label: "Captain America",
+          why: "Cap survives Endgame and lives out a long life. He doesn’t make the sacrificial snap.",
+          reflection: {
+            prompt: "How does Captain America’s story actually end in Endgame?",
+            correct: { label: "He returns the stones and lives out a full life", why: "Steve goes back in time to return each stone, then chooses to stay and live out his life with Peggy Carter." },
+            wrong:   { label: "He dies destroying the gauntlet", why: "That’s a fan theory, not what happens. Cap’s ending is quiet and chosen — not sacrificial." }
+          }
+        }
+      }
+    ]
+  },
+  {
+    name: "Heroes, Gear & Hideouts",
+    blurb: "The objects and places that anchor the universe.",
+    clueLetter: "H",
+    cluePosition: 5,
+    clueDescription: "second-to-last letter",
+    questions: [
+      {
+        prompt: "What is the name of Thor’s original hammer?",
+        correct: { label: "Mjolnir", why: "Mjolnir is the Asgardian hammer forged in the heart of a dying star — only the worthy can lift it." },
+        wrong: {
+          label: "Stormbreaker",
+          why: "Stormbreaker is a Marvel weapon, but it’s not Thor’s original. Mjolnir came first.",
+          reflection: {
+            prompt: "When does Thor start using Stormbreaker?",
+            correct: { label: "After Mjolnir is destroyed by Hela", why: "Hela shatters Mjolnir in Ragnarok. Thor forges Stormbreaker on Nidavellir in Infinity War as a replacement." },
+            wrong:   { label: "From the very beginning, in Thor (2011)", why: "Thor wields Mjolnir for most of his arc. Stormbreaker only enters the story after Mjolnir is gone." }
+          }
+        }
+      },
+      {
+        prompt: "Who is the (self-appointed) leader of the Guardians of the Galaxy?",
+        correct: { label: "Star-Lord (Peter Quill)", why: "Peter Quill names himself Star-Lord and assumes command of the Guardians — a leadership the rest of the team only partially endorses." },
+        wrong: {
+          label: "Rocket",
+          why: "Rocket is a core Guardian and often the operational brain of the group, but Quill is the named leader.",
+          reflection: {
+            prompt: "What kind of character is Rocket?",
+            correct: { label: "A genetically modified raccoon", why: "Rocket is a small mammal engineered into a sentient, cybernetically enhanced fighter — not the team’s nominal leader." },
+            wrong:   { label: "An exiled prince of Xandar", why: "Rocket has no royal lineage. His backstory is one of experimentation, not aristocracy." }
+          }
+        }
+      },
+      {
+        prompt: "What’s the name of Doctor Strange’s home base in New York?",
+        correct: { label: "Sanctum Sanctorum", why: "The Sanctum Sanctorum at 177A Bleecker Street is one of three sanctums that protect Earth from mystical threats." },
+        wrong: {
+          label: "Avengers Tower",
+          why: "Avengers Tower is a different building, owned by someone else entirely.",
+          reflection: {
+            prompt: "Who owns Avengers Tower?",
+            correct: { label: "Tony Stark", why: "Avengers Tower is Stark Tower rebranded — it belongs to Tony, not to Strange." },
+            wrong:   { label: "Doctor Strange", why: "Strange has the Sanctum, not the Tower. Different building, different magic system, different owner." }
+          }
+        }
+      }
+    ]
+  }
+];
+
+function buildPrefilled(cluesEarned) {
+  const out = {};
+  cluesEarned.forEach(cpIdx => {
+    const cp = CHECKPOINTS[cpIdx];
+    out[cp.cluePosition] = cp.clueLetter;
+  });
+  return out;
+}
+
+function nextEmptyIndex(answer, filled) {
+  for (let i = 0; i < answer.length; i++) {
+    if (answer[i] === " ") continue;
+    if (!filled[i]) return i;
+  }
+  return -1;
+}
+
+function Choice({ label, kind = "idle", onClick, marker }) {
+  return (
+    <button className={`dt-choice dt-choice--${kind}`} onClick={onClick} disabled={kind !== "idle"}>
+      <span className="dt-choice-marker" aria-hidden="true">{marker || ""}</span>
+      <span className="dt-choice-label">{label}</span>
+    </button>
+  );
+}
+
+function ChoicePair({ choices, locked, pickedKey, onPick }) {
+  return (
+    <div className="dt-choices">
+      {choices.map(c => {
+        let kind = "idle", marker = "";
+        if (locked) {
+          if (c.key === pickedKey) {
+            kind = c.correct ? "picked-correct" : "picked-wrong";
+            marker = c.correct ? "✓" : "✕";
+          } else if (c.correct) {
+            kind = "reveal-correct"; marker = "✓";
+          } else {
+            kind = "dimmed";
+          }
+        }
+        return <Choice key={c.key} label={c.label} kind={kind} marker={marker} onClick={() => onPick(c)} />;
+      })}
+    </div>
+  );
+}
+
+function FeedbackBlock({ tone, label, body, children }) {
+  return (
+    <div className={`dt-feedback dt-feedback--${tone}`}>
+      <div className="dt-feedback-head">
+        <span className="dt-feedback-tag">{label}</span>
+        <span className="dt-feedback-rule" />
+      </div>
+      <p className="dt-feedback-why">
+        <span className="dt-feedback-label">Why</span>
+        {body}
+      </p>
+      <div className="dt-feedback-foot">{children}</div>
+    </div>
+  );
+}
+
+function QuestionRunner({ cpIdx, qIdx, qNumber, qTotal, onQuestionComplete, onBackToBoard }) {
+  const q = CHECKPOINTS[cpIdx].questions[qIdx];
+  const [phase, setPhase] = useState("ask");
+  const [pickedKey, setPickedKey] = useState(null);
+
+  const orderRef = useRef(null);
+  if (!orderRef.current) {
+    orderRef.current = {
+      main: Math.random() > 0.5 ? ["correct", "wrong"] : ["wrong", "correct"],
+      refl: Math.random() > 0.5 ? ["correct", "wrong"] : ["wrong", "correct"]
+    };
+  }
+  const order = orderRef.current;
+
+  const mainChoices = order.main.map(k => ({ key: k, label: q[k].label, correct: k === "correct" }));
+  const refChoices = order.refl.map(k => ({
+    key: k, label: q.wrong.reflection[k].label, correct: k === "correct"
+  }));
+
+  const showingReflection = phase === "reflect" || phase === "ref-correct" || phase === "ref-wrong";
+
+  return (
+    <>
+      <div className="dt-shell-head">
+        <span className="dt-chip dt-chip--cp">Checkpoint {cpIdx + 1}</span>
+        <span className="dt-context">
+          Question {qNumber} of {qTotal}{showingReflection ? " · Reflection" : ""}
+        </span>
+        <button className="dt-back-board" onClick={onBackToBoard} title="Return to the checkpoint board">
+          <span aria-hidden="true">{"←"}</span> Back to board
+        </button>
+      </div>
+
+      {!showingReflection && (
+        <>
+          <div className="dt-question">
+            <span className="dt-eyebrow">Question</span>
+            <h3>{q.prompt}</h3>
+          </div>
+          <ChoicePair
+            choices={mainChoices}
+            locked={phase !== "ask"}
+            pickedKey={pickedKey}
+            onPick={c => { setPickedKey(c.key); setPhase(c.correct ? "ans-correct" : "ans-wrong"); }}
+          />
+          {phase === "ans-correct" && (
+            <FeedbackBlock tone="correct" label="Correct" body={q.correct.why}>
+              <button className="dt-pill dt-pill--solid" onClick={onQuestionComplete}>
+                {qNumber === qTotal ? "Complete checkpoint →" : "Next question →"}
+              </button>
+            </FeedbackBlock>
+          )}
+          {phase === "ans-wrong" && (
+            <FeedbackBlock tone="wrong" label="Not quite" body={q.wrong.why}>
+              <button className="dt-pill dt-pill--solid" onClick={() => { setPickedKey(null); setPhase("reflect"); }}>
+                Continue to a reflection question {"→"}
+              </button>
+            </FeedbackBlock>
+          )}
+        </>
+      )}
+
+      {showingReflection && (
+        <>
+          <div className="dt-question dt-question--reflection">
+            <span className="dt-eyebrow">Reflection question</span>
+            <h3>{q.wrong.reflection.prompt}</h3>
+            <p className="dt-reflection-hint">
+              Answer this to make sure you understand the distinction {"—"} then we&rsquo;ll return to the original question.
+            </p>
+          </div>
+          <ChoicePair
+            choices={refChoices}
+            locked={phase !== "reflect"}
+            pickedKey={pickedKey}
+            onPick={c => { setPickedKey(c.key); setPhase(c.correct ? "ref-correct" : "ref-wrong"); }}
+          />
+          {phase === "ref-correct" && (
+            <FeedbackBlock tone="correct" label="Got it" body={q.wrong.reflection.correct.why}>
+              <button className="dt-pill dt-pill--solid" onClick={() => { setPickedKey(null); setPhase("ask"); }}>
+                Great {"—"} back to the original question {"→"}
+              </button>
+            </FeedbackBlock>
+          )}
+          {phase === "ref-wrong" && (
+            <FeedbackBlock tone="wrong" label="Not quite" body={q.wrong.reflection.wrong.why}>
+              <button className="dt-pill dt-pill--solid" onClick={() => { setPickedKey(null); setPhase("reflect"); }}>
+                Try the reflection again {"→"}
+              </button>
+            </FeedbackBlock>
+          )}
+        </>
+      )}
+    </>
+  );
+}
+
+function CheckpointBoard({ cpIdx, cluesEarned, onEnter }) {
+  const isFinal = cpIdx === 3;
+
+  return (
+    <div className="dt-board">
+      <header className="dt-board-head">
+        <span className="dt-eyebrow">Escape room board</span>
+        <h3>
+          {isFinal
+            ? "All three clues collected. The final challenge awaits."
+            : cpIdx === 0
+              ? "Three checkpoints. Three clues. One final challenge."
+              : `Checkpoint ${cpIdx} cleared. Clue earned.`}
+        </h3>
+        <p className="dt-board-lede">
+          {isFinal
+            ? "Use the three letters you’ve collected to crack the final answer on the keyboard."
+            : "Each checkpoint is three quick questions. Wrong answers route you through a reflection — you can’t lose, only learn. Complete a checkpoint to earn a letter clue."}
+        </p>
+      </header>
+
+      <div className="dt-board-grid">
+        {CHECKPOINTS.map((cp, i) => {
+          const status = i < cpIdx ? "done" : i === cpIdx ? "current" : "locked";
+          return (
+            <article key={i} className={`dt-cp dt-cp--${status}`}>
+              <div className="dt-cp-top">
+                <span className="dt-cp-num">0{i + 1}</span>
+                <span className="dt-cp-status">
+                  {status === "done" && "Complete"}
+                  {status === "current" && "Up next"}
+                  {status === "locked" && "Locked"}
+                </span>
+              </div>
+              <h4 className="dt-cp-name">{cp.name}</h4>
+              <p className="dt-cp-blurb">{cp.blurb}</p>
+              <div className="dt-cp-clue">
+                <span className="dt-cp-clue-label">Clue</span>
+                <span className={`dt-cp-clue-letter ${status === "done" ? "is-earned" : ""}`}>
+                  {status === "done" ? cp.clueLetter : "?"}
+                </span>
+              </div>
+            </article>
+          );
+        })}
+
+        <article className={`dt-cp dt-cp--final dt-cp--${isFinal ? "current" : "locked"}`}>
+          <div className="dt-cp-top">
+            <span className="dt-cp-num">04</span>
+            <span className="dt-cp-status">{isFinal ? "Up next" : "Locked"}</span>
+          </div>
+          <h4 className="dt-cp-name">Final Challenge</h4>
+          <p className="dt-cp-blurb">Use your three clue letters to crack the secret identity on the keyboard.</p>
+          <div className="dt-cp-clue">
+            <span className="dt-cp-clue-label">Clues collected</span>
+            <span className="dt-cp-clue-counter">{cluesEarned.length} / 3</span>
+          </div>
+        </article>
+      </div>
+
+      <div className="dt-board-foot">
+        <button className="dt-pill dt-pill--solid dt-pill--lg" onClick={onEnter}>
+          {cpIdx === 0 && "Begin Checkpoint 1 →"}
+          {cpIdx === 1 && "Enter Checkpoint 2 →"}
+          {cpIdx === 2 && "Enter Checkpoint 3 →"}
+          {isFinal   && "Enter the Final Challenge →"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const KEYBOARD_ROWS = [
+  "QWERTYUIOP".split(""),
+  "ASDFGHJKL".split(""),
+  "ZXCVBNM".split("")
+];
+
+function FinalChallenge({ prefilled, onWin }) {
+  const [userFilled, setUserFilled] = useState({});
+  const [wrongAttempt, setWrongAttempt] = useState(null);
+  const [justFilled, setJustFilled] = useState(null);
+
+  const combined = { ...prefilled, ...userFilled };
+  const nextIdx = nextEmptyIndex(FINAL_ANSWER, combined);
+
+  useEffect(() => {
+    if (nextIdx === -1) {
+      const t = setTimeout(onWin, 650);
+      return () => clearTimeout(t);
+    }
+  }, [nextIdx, onWin]);
+
+  const onKey = letter => {
+    if (wrongAttempt) return;
+    if (nextIdx === -1) return;
+    const target = FINAL_ANSWER[nextIdx];
+    if (letter === target) {
+      setUserFilled(prev => ({ ...prev, [nextIdx]: letter }));
+      setJustFilled(nextIdx);
+      setTimeout(() => setJustFilled(null), 400);
+    } else {
+      setWrongAttempt({ letter, idx: nextIdx });
+    }
+  };
+
+  useEffect(() => {
+    const onKeyDown = e => {
+      if (wrongAttempt) return;
+      const k = e.key.toUpperCase();
+      if (/^[A-Z]$/.test(k)) onKey(k);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [wrongAttempt, nextIdx]);
+
+  const words = FINAL_ANSWER.split(" ");
+  let runningIdx = 0;
+  const wordSlots = words.map(word => {
+    const slots = word.split("").map(ch => {
+      const i = runningIdx++;
+      const letter = combined[i];
+      const isPrefilled = prefilled[i] !== undefined;
+      const isCurrent = i === nextIdx;
+      const isJust = justFilled === i;
+      return { i, letter, isPrefilled, isCurrent, isJust };
+    });
+    runningIdx++;
+    return slots;
+  });
+
+  return (
+    <div className="dt-final">
+      <header className="dt-final-head">
+        <span className="dt-eyebrow">Final Challenge</span>
+        <h3>{FINAL_PROMPT}</h3>
+        <p className="dt-final-hint">
+          Three letters are filled in from your collected clues. Click the keyboard to fill the rest, left to right.
+        </p>
+      </header>
+
+      <div className="dt-slots">
+        {wordSlots.map((slots, w) => (
+          <div key={w} className="dt-slot-word">
+            {slots.map(s => (
+              <div
+                key={s.i}
+                className={`dt-slot ${s.letter ? "is-filled" : ""} ${s.isPrefilled ? "is-prefilled" : ""} ${s.isCurrent ? "is-current" : ""} ${s.isJust ? "just-filled" : ""}`}
+              >
+                <span className="dt-slot-letter">{s.letter || ""}</span>
+                {s.isPrefilled && <span className="dt-slot-tag">clue</span>}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      <div className="dt-keyboard">
+        {KEYBOARD_ROWS.map((row, r) => (
+          <div key={r} className="dt-keyrow">
+            {row.map(letter => (
+              <button
+                key={letter}
+                className="dt-key"
+                onClick={() => onKey(letter)}
+                disabled={!!wrongAttempt || nextIdx === -1}
+              >
+                {letter}
+              </button>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {wrongAttempt && (
+        <div className="dt-overlay">
+          <div className="dt-overlay-card">
+            <span className="dt-eyebrow" style={{ color: "var(--rust)" }}>Incorrect</span>
+            <h4>That letter doesn&rsquo;t fit here.</h4>
+            <p>
+              You picked <strong className="dt-overlay-letter">{wrongAttempt.letter}</strong> for the next blank
+              {" "}&mdash; but the right letter is hiding somewhere else on the keyboard. Head back to the board and try again.
+            </p>
+            <button className="dt-pill dt-pill--solid" onClick={() => setWrongAttempt(null)}>
+              Back to the board {"→"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function WonScreen({ onRestart }) {
+  return (
+    <div className="dt-won">
+      <span className="dt-eyebrow">You escaped</span>
+      <h3>Congratulations {"—"} you&rsquo;ve completed the task.</h3>
+      <div className="dt-won-answer">
+        <span>The answer was</span>
+        <strong>{FINAL_ANSWER}</strong>
+      </div>
+      <p className="dt-won-body">
+        Three checkpoints, three clue letters, one final word. Every wrong turn along the way was a chance to reflect and correct {"—"} the activity loops you forward, never out.
+      </p>
+      <button className="dt-pill dt-pill--solid dt-pill--lg" onClick={onRestart}>
+        Try the entire activity again {"→"}
+      </button>
+    </div>
+  );
+}
+
+function DecisionTree() {
+  const [mode, setMode] = useState("board");
+  const [cpIdx, setCpIdx] = useState(0);
+  const [qIdx, setQIdx] = useState(0);
+  const [cluesEarned, setCluesEarned] = useState([]);
+
+  const prefilled = useMemo(() => buildPrefilled(cluesEarned), [cluesEarned]);
+
+  const enterFromBoard = () => {
+    if (cpIdx < 3) { setMode("checkpoint"); setQIdx(0); }
+    else { setMode("final"); }
+  };
+
+  const onQuestionComplete = () => {
+    const total = CHECKPOINTS[cpIdx].questions.length;
+    if (qIdx + 1 < total) {
+      setQIdx(qIdx + 1);
+    } else {
+      setCluesEarned(prev => [...prev, cpIdx]);
+      setCpIdx(cpIdx + 1);
+      setMode("board");
+    }
+  };
+
+  const restart = () => { setMode("board"); setCpIdx(0); setQIdx(0); setCluesEarned([]); };
+
+  return (
+    <div className="dt-shell">
+      {mode === "board" && (
+        <CheckpointBoard cpIdx={cpIdx} cluesEarned={cluesEarned} onEnter={enterFromBoard} />
+      )}
+      {mode === "checkpoint" && (
+        <QuestionRunner
+          key={`${cpIdx}-${qIdx}`}
+          cpIdx={cpIdx} qIdx={qIdx}
+          qNumber={qIdx + 1} qTotal={CHECKPOINTS[cpIdx].questions.length}
+          onQuestionComplete={onQuestionComplete}
+          onBackToBoard={() => setMode("board")}
+        />
+      )}
+      {mode === "final" && (
+        <FinalChallenge prefilled={prefilled} onWin={() => setMode("won")} />
+      )}
+      {mode === "won" && (
+        <WonScreen onRestart={restart} />
+      )}
+    </div>
+  );
+}
+
+window.DecisionTree = DecisionTree;
+</script>
+
+<!-- Pedagogy component -->
+<script type="text/babel">
+const { useState: useStateP } = React;
+
+const LOOP_STEPS = [
+  {
+    n: "01", label: "Decision",
+    title: "Student makes a choice",
+    body: "Every branch is a real commitment. The student doesn’t see the answer key — they pick the path that makes sense from where they’re standing. Two options, one decision.",
+    tone: "ink"
+  },
+  {
+    n: "02", label: "Feedback",
+    title: "Activity explains the answer",
+    body: "Correct path: a short “why” reinforces the reasoning. Wrong path: a specific, non-punitive explanation of what makes that choice not fit — the misconception gets named, not punished.",
+    tone: "rust"
+  },
+  {
+    n: "03", label: "Reflection",
+    title: "Follow-up question — only when wrong",
+    body: "If the student picked the wrong answer, they don’t just read the explanation. They answer a second reflection question that tests whether they actually understand the distinction. Getting that one right is the proof.",
+    tone: "rust"
+  },
+  {
+    n: "04", label: "Return",
+    title: "Back to the original question",
+    body: "Once the reflection is answered correctly, the student returns to the original question with new understanding and answers it correctly. The loop closes with a victory, not a defeat.",
+    tone: "ink"
+  },
+  {
+    n: "05", label: "Advance",
+    title: "Forward to the next decision",
+    body: "Only after the original question is answered correctly does the next branch open. The loop is the unit of learning, not the question. Every wrong turn becomes a learning moment; nobody leaves with a knowledge gap.",
+    tone: "ink"
+  }
+];
+
+function PedagogyLoop() {
+  const [active, setActive] = useStateP(0);
+
+  return (
+    <div className="ped-shell">
+      <div className="ped-rail">
+        {LOOP_STEPS.map((s, i) => (
+          <button
+            key={i}
+            className={`ped-rail-item ${active === i ? "is-active" : ""}`}
+            onClick={() => setActive(i)}
+          >
+            <span className={`ped-rail-num ped-tone--${s.tone}`}>{s.n}</span>
+            <span className="ped-rail-label">{s.label}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="ped-card">
+        <div className="ped-card-head">
+          <span className={`ped-card-num ped-tone--${LOOP_STEPS[active].tone}`}>{LOOP_STEPS[active].n}</span>
+          <span className="ped-card-label">{LOOP_STEPS[active].label}</span>
+        </div>
+        <h3 className="ped-card-title">{LOOP_STEPS[active].title}</h3>
+        <p className="ped-card-body">{LOOP_STEPS[active].body}</p>
+        <div className="ped-card-foot">
+          <span className="ped-foot-kicker">Loop position</span>
+          <div className="ped-dots">
+            {LOOP_STEPS.map((_, i) => (
+              <span key={i} className={`ped-dot ${i === active ? "is-active" : ""} ${i < active ? "is-done" : ""}`} />
+            ))}
+          </div>
+          <button
+            className="dt-pill dt-pill--solid"
+            onClick={() => setActive((active + 1) % LOOP_STEPS.length)}
+          >
+            {(active === LOOP_STEPS.length - 1 ? "Restart the loop" : "Next step") + " →"}
+          </button>
+        </div>
+      </div>
+
+      <aside className="ped-pull">
+        <p className="ped-pull-quote">
+          &ldquo;Failure stops being the end of a question and becomes the beginning of one.&rdquo;
+        </p>
+        <ul className="ped-pull-list">
+          <li><span>What students build</span><strong>Problem-solving</strong></li>
+          <li><span>What students practice</span><strong>Critical thinking</strong></li>
+          <li><span>What students leave with</span><strong>A correct answer to every question</strong></li>
+        </ul>
+      </aside>
+    </div>
+  );
+}
+
+window.PedagogyLoop = PedagogyLoop;
+</script>
+
+<!-- Templates component -->
+<script type="text/babel">
+const TEMPLATES = [
+  { id: "tpl1", name: "Template 1", link: "#" },
+  { id: "tpl2", name: "Template 2", link: "#" },
+  { id: "tpl3", name: "Template 3", link: "#" }
+];
+
+function Templates() {
+  return (
+    <div className="tpl-grid">
+      {TEMPLATES.map((t, i) => (
+        <article key={t.id} className="tpl-card">
+          <div className="tpl-image">
+            <image-slot
+              id={t.id}
+              placeholder="Drop a thumbnail"
+              shape="rect"
+            ></image-slot>
+            <span className="tpl-image-num">{String(i + 1).padStart(2, "0")}</span>
+          </div>
+          <div className="tpl-meta">
+            <span className="tpl-num">Template</span>
+            <h3>{t.name}</h3>
+            <a className="tpl-cta" href={t.link}>
+              Open template <span aria-hidden="true">{"→"}</span>
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+window.Templates = Templates;
+</script>
+
+<!-- Mount all React components -->
+<script type="text/babel">
+  ReactDOM.createRoot(document.getElementById("dt-mount")).render(<window.DecisionTree />);
+  ReactDOM.createRoot(document.getElementById("ped-mount")).render(<window.PedagogyLoop />);
+  ReactDOM.createRoot(document.getElementById("tpl-mount")).render(<window.Templates />);
+</script>
+
+</body>
+</html>
