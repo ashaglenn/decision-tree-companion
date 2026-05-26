@@ -849,6 +849,75 @@
     text-transform: uppercase; color: rgba(247,242,232,0.5);
   }
 
+  /* ---------- POWERPOINT GUIDE ---------- */
+  .ppt-guide {
+    margin-top: 72px;
+    padding-top: 56px;
+    border-top: 1px solid var(--rule);
+  }
+  .ppt-guide-header {
+    display: flex; align-items: baseline; gap: 20px; margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+  .ppt-guide-header h3 { font-size: clamp(26px, 2.8vw, 36px); }
+
+  .ppt-section { margin-bottom: 56px; }
+  .ppt-section-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--rust); margin-bottom: 12px;
+    display: block;
+  }
+  .ppt-section h4 {
+    font-family: var(--serif); font-size: clamp(22px, 2.4vw, 28px);
+    font-weight: 400; color: var(--ink); margin: 0 0 18px;
+  }
+  .ppt-section > p {
+    font-size: 16px; line-height: 1.65; color: var(--ink-2); max-width: 72ch;
+    margin-bottom: 28px;
+  }
+
+  /* diagram frames */
+  .ppt-diagram {
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 32px;
+    margin: 28px 0;
+    display: flex; justify-content: center; align-items: center;
+  }
+  .ppt-diagram svg { max-width: 100%; height: auto; }
+
+  /* two-col diagram+steps layout */
+  .ppt-split {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;
+  }
+  @media (max-width: 860px) { .ppt-split { grid-template-columns: 1fr; } }
+
+  /* numbered steps */
+  .ppt-steps { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0; }
+  .ppt-step {
+    display: grid; grid-template-columns: 36px 1fr; gap: 14px; align-items: start;
+    padding: 16px 0; border-top: 1px solid var(--rule);
+  }
+  .ppt-step:last-child { border-bottom: 1px solid var(--rule); }
+  .ppt-step-n {
+    font-family: var(--serif); font-size: 22px; line-height: 1.2;
+    color: var(--ink-3); padding-top: 2px;
+  }
+  .ppt-step-body { font-size: 15px; line-height: 1.6; color: var(--ink-2); }
+  .ppt-step-body strong { color: var(--ink); font-weight: 500; }
+
+  /* callout box */
+  .ppt-callout {
+    background: var(--paper-1);
+    border-left: 3px solid var(--rust);
+    padding: 18px 22px; border-radius: 0 3px 3px 0;
+    margin-top: 24px;
+    font-size: 15px; line-height: 1.65; color: var(--ink-2);
+    max-width: 72ch;
+  }
+  .ppt-callout strong { color: var(--rust); font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+
   /* ---------- print ---------- */
   @media print {
     .topbar { position: static; }
@@ -945,6 +1014,301 @@
       </div>
     </div>
     <div id="tpl-mount"></div>
+
+    <!-- POWERPOINT GUIDE -->
+    <div class="ppt-guide">
+      <div class="ppt-guide-header">
+        <span class="eyebrow">Using the templates</span>
+        <h3>How to edit a PowerPoint escape room &mdash; without touching the links.</h3>
+      </div>
+
+      <!-- PART 1: The transparent shape system -->
+      <div class="ppt-section">
+        <span class="ppt-section-label">The core mechanic</span>
+        <h4>Every answer is a text box with an invisible shape on top.</h4>
+        <p>The clickable part of each answer isn&rsquo;t the text &mdash; it&rsquo;s a transparent shape sitting on top of it. That shape carries the hyperlink. This means you can freely change what any answer <em>says</em> without ever touching the link, and you can swap which answer is &ldquo;correct&rdquo; by simply reassigning the link on one shape.</p>
+
+        <div class="ppt-split">
+          <div class="ppt-diagram">
+            <!-- SVG: Layer diagram -->
+            <svg viewBox="0 0 380 220" width="380" height="220" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono', monospace">
+              <!-- background -->
+              <rect width="380" height="220" fill="#ece2cb" rx="4"/>
+
+              <!-- LEFT: Edit mode -->
+              <text x="72" y="22" font-size="9" letter-spacing="2" fill="#6a5a45" text-anchor="middle" font-family="'JetBrains Mono',monospace">EDIT MODE</text>
+              <!-- text box -->
+              <rect x="12" y="34" width="120" height="44" rx="2" fill="#f7f2e8" stroke="#b8451f" stroke-width="1.5" stroke-dasharray="4,3"/>
+              <text x="72" y="52" font-size="12" fill="#1e1a14" text-anchor="middle">Iron Man</text>
+              <text x="72" y="68" font-size="9" fill="#6a5a45" text-anchor="middle">← text box (editable)</text>
+              <!-- transparent shape moved aside -->
+              <rect x="148" y="34" width="120" height="44" rx="2" fill="rgba(184,69,31,0.08)" stroke="#b8451f" stroke-width="1.5" stroke-dasharray="4,3"/>
+              <text x="208" y="52" font-size="10" fill="#b8451f" text-anchor="middle">transparent</text>
+              <text x="208" y="64" font-size="10" fill="#b8451f" text-anchor="middle">shape (moved)</text>
+              <!-- arrow showing move -->
+              <path d="M136 56 L146 56" stroke="#b8451f" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+              <defs>
+                <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#b8451f"/>
+                </marker>
+              </defs>
+              <text x="141" y="48" font-size="9" fill="#b8451f" text-anchor="middle">slide</text>
+
+              <!-- divider -->
+              <line x1="190" y1="20" x2="190" y2="200" stroke="#1e1a14" stroke-width="0.5" stroke-opacity="0.2"/>
+
+              <!-- RIGHT: Presentation mode -->
+              <text x="308" y="22" font-size="9" letter-spacing="2" fill="#6a5a45" text-anchor="middle" font-family="'JetBrains Mono',monospace">PRESENTATION</text>
+              <!-- text box -->
+              <rect x="248" y="34" width="120" height="44" rx="2" fill="#f7f2e8" stroke="#e3d6b6" stroke-width="1"/>
+              <text x="308" y="52" font-size="12" fill="#1e1a14" text-anchor="middle">Iron Man</text>
+              <!-- transparent shape on top -->
+              <rect x="248" y="34" width="120" height="44" rx="2" fill="rgba(184,69,31,0.0)" stroke="none"/>
+              <!-- cursor icon -->
+              <text x="308" y="68" font-size="9" fill="#6a5a45" text-anchor="middle">↑ shape on top · click to link</text>
+
+              <!-- labels at bottom -->
+              <text x="72" y="106" font-size="10" fill="#3a3127" text-anchor="middle">1. Slide shape aside</text>
+              <text x="72" y="120" font-size="10" fill="#3a3127" text-anchor="middle">2. Edit the text box</text>
+              <text x="72" y="134" font-size="10" fill="#3a3127" text-anchor="middle">3. Slide shape back</text>
+              <text x="308" y="106" font-size="10" fill="#3a3127" text-anchor="middle">Text shows through.</text>
+              <text x="308" y="120" font-size="10" fill="#3a3127" text-anchor="middle">Shape is clickable.</text>
+              <text x="308" y="134" font-size="10" fill="#3a3127" text-anchor="middle">Link stays intact.</text>
+
+              <!-- Slide name tooltip demo -->
+              <rect x="20" y="155" width="340" height="52" rx="3" fill="#1e1a14"/>
+              <text x="36" y="173" font-size="9" fill="#efd6c4" letter-spacing="1.5" font-family="'JetBrains Mono',monospace">SLIDE NAMES (hover preview)</text>
+              <text x="36" y="190" font-size="11" fill="#f7f2e8">Each slide has a title: &quot;CP1 · Q2 · Correct&quot;</text>
+              <text x="36" y="204" font-size="10" fill="rgba(247,242,232,0.6)">Hover any link in slideshow mode to see exactly where it goes.</text>
+            </svg>
+          </div>
+
+          <ol class="ppt-steps">
+            <li class="ppt-step">
+              <span class="ppt-step-n">1</span>
+              <span class="ppt-step-body"><strong>Click the answer area.</strong> You&rsquo;ll select the transparent shape. It will have a faint selection handle — this is the clickable layer.</span>
+            </li>
+            <li class="ppt-step">
+              <span class="ppt-step-n">2</span>
+              <span class="ppt-step-body"><strong>Drag the shape to the side</strong> to uncover the text box underneath.</span>
+            </li>
+            <li class="ppt-step">
+              <span class="ppt-step-n">3</span>
+              <span class="ppt-step-body"><strong>Click the text box</strong> and type your question or answer text.</span>
+            </li>
+            <li class="ppt-step">
+              <span class="ppt-step-n">4</span>
+              <span class="ppt-step-body"><strong>Drag the transparent shape back</strong> to cover the text box exactly as it was.</span>
+            </li>
+            <li class="ppt-step">
+              <span class="ppt-step-n">5</span>
+              <span class="ppt-step-body"><strong>Repeat for each answer.</strong> Never delete the transparent shapes — they carry the hyperlinks.</span>
+            </li>
+          </ol>
+        </div>
+
+        <div class="ppt-callout">
+          <strong>Swapping correct &amp; wrong answers</strong>
+          Because the link lives on the shape (not the text), you can make either answer the &ldquo;correct&rdquo; one. Right-click the transparent shape &rarr; <em>Edit Hyperlink</em> &rarr; change the destination to the correct-answer slide or wrong-answer slide. The slide names tell you exactly which is which &mdash; hover before you commit.
+        </div>
+      </div>
+
+      <!-- PART 2: Slide flow -->
+      <div class="ppt-section">
+        <span class="ppt-section-label">How the slides connect</span>
+        <h4>Every question follows the same five-slide loop.</h4>
+        <p>You don&rsquo;t need to re-link slides when you change your content &mdash; the structure is already built. Just update the text. Here&rsquo;s the path a student takes through each question:</p>
+
+        <div class="ppt-diagram">
+          <!-- SVG: Flow map -->
+          <svg viewBox="0 0 680 260" width="680" height="260" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arrowB" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                <path d="M0,0 L7,3.5 L0,7 Z" fill="#1e1a14"/>
+              </marker>
+              <marker id="arrowR" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                <path d="M0,0 L7,3.5 L0,7 Z" fill="#b8451f"/>
+              </marker>
+              <marker id="arrowG" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                <path d="M0,0 L7,3.5 L0,7 Z" fill="#6a7a3a"/>
+              </marker>
+            </defs>
+            <rect width="680" height="260" fill="#ece2cb" rx="4"/>
+
+            <!-- Question slide -->
+            <rect x="20" y="100" width="110" height="48" rx="3" fill="#1e1a14"/>
+            <text x="75" y="119" font-size="11" fill="#f7f2e8" text-anchor="middle" font-family="Georgia,serif">Question</text>
+            <text x="75" y="135" font-size="9" fill="rgba(247,242,232,0.6)" text-anchor="middle" font-family="'JetBrains Mono',monospace">2 answer shapes</text>
+
+            <!-- Correct branch -->
+            <path d="M130 116 L178 80" stroke="#6a7a3a" stroke-width="1.5" fill="none" marker-end="url(#arrowG)"/>
+            <text x="148" y="93" font-size="9" fill="#6a7a3a" font-family="'JetBrains Mono',monospace">correct</text>
+            <rect x="180" y="56" width="110" height="48" rx="3" fill="#e8eadd" stroke="#6a7a3a" stroke-width="1.5"/>
+            <text x="235" y="75" font-size="11" fill="#1e1a14" text-anchor="middle" font-family="Georgia,serif">Why correct</text>
+            <text x="235" y="91" font-size="9" fill="#6a5a45" text-anchor="middle" font-family="'JetBrains Mono',monospace">explanation slide</text>
+            <!-- next question arrow -->
+            <path d="M290 80 L340 80" stroke="#6a7a3a" stroke-width="1.5" fill="none" marker-end="url(#arrowG)"/>
+            <rect x="342" y="56" width="110" height="48" rx="3" fill="#1e1a14"/>
+            <text x="397" y="75" font-size="11" fill="#f7f2e8" text-anchor="middle" font-family="Georgia,serif">Next question</text>
+            <text x="397" y="91" font-size="9" fill="rgba(247,242,232,0.6)" text-anchor="middle" font-family="'JetBrains Mono',monospace">or clue slide</text>
+
+            <!-- Wrong branch -->
+            <path d="M130 132 L178 168" stroke="#b8451f" stroke-width="1.5" fill="none" marker-end="url(#arrowR)"/>
+            <text x="148" y="162" font-size="9" fill="#b8451f" font-family="'JetBrains Mono',monospace">wrong</text>
+            <rect x="180" y="144" width="110" height="48" rx="3" fill="#efd6c4" stroke="#b8451f" stroke-width="1.5"/>
+            <text x="235" y="163" font-size="11" fill="#1e1a14" text-anchor="middle" font-family="Georgia,serif">Why wrong</text>
+            <text x="235" y="179" font-size="9" fill="#6a5a45" text-anchor="middle" font-family="'JetBrains Mono',monospace">explanation slide</text>
+
+            <!-- Reflection -->
+            <path d="M290 168 L340 168" stroke="#b8451f" stroke-width="1.5" fill="none" marker-end="url(#arrowR)"/>
+            <rect x="342" y="144" width="110" height="48" rx="3" fill="#efd6c4" stroke="#b8451f" stroke-width="1.5"/>
+            <text x="397" y="163" font-size="11" fill="#1e1a14" text-anchor="middle" font-family="Georgia,serif">Reflection Q</text>
+            <text x="397" y="179" font-size="9" fill="#6a5a45" text-anchor="middle" font-family="'JetBrains Mono',monospace">2 answer shapes</text>
+
+            <!-- Reflection correct → back to question -->
+            <path d="M452 155 L530 124" stroke="#6a7a3a" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#arrowG)"/>
+            <text x="500" y="133" font-size="9" fill="#6a7a3a" font-family="'JetBrains Mono',monospace">correct →</text>
+            <text x="500" y="144" font-size="9" fill="#6a7a3a" font-family="'JetBrains Mono',monospace">back to Q</text>
+            <rect x="530" y="100" width="130" height="48" rx="3" fill="#1e1a14"/>
+            <text x="595" y="119" font-size="11" fill="#f7f2e8" text-anchor="middle" font-family="Georgia,serif">Original Q again</text>
+            <text x="595" y="135" font-size="9" fill="rgba(247,242,232,0.6)" text-anchor="middle" font-family="'JetBrains Mono',monospace">student now answers correctly</text>
+
+            <!-- Reflection wrong → retry -->
+            <path d="M452 175 L505 220 L342 220 L342 193" stroke="#b8451f" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#arrowR)"/>
+            <text x="435" y="218" font-size="9" fill="#b8451f" font-family="'JetBrains Mono',monospace">wrong → retry reflection</text>
+
+            <!-- legend -->
+            <rect x="20" y="220" width="10" height="10" fill="#6a7a3a" rx="1"/>
+            <text x="36" y="230" font-size="9" fill="#3a3127" font-family="'JetBrains Mono',monospace">correct path</text>
+            <rect x="130" y="220" width="10" height="10" fill="#b8451f" rx="1"/>
+            <text x="146" y="230" font-size="9" fill="#3a3127" font-family="'JetBrains Mono',monospace">wrong path</text>
+            <line x1="240" y1="225" x2="255" y2="225" stroke="#3a3127" stroke-width="1.5" stroke-dasharray="4,2"/>
+            <text x="261" y="230" font-size="9" fill="#3a3127" font-family="'JetBrains Mono',monospace">loop back</text>
+          </svg>
+        </div>
+
+        <div class="ppt-callout">
+          <strong>Slide names = your map</strong>
+          Every slide is named with a consistent pattern &mdash; e.g. &ldquo;CP2 &middot; Q3 &middot; Wrong&rdquo; or &ldquo;CP1 &middot; Q1 &middot; Reflection &middot; Correct.&rdquo; In the Selection Pane (<em>Home &rarr; Arrange &rarr; Selection Pane</em>) you can see every object&rsquo;s name. Hover any hyperlink in slideshow mode and the destination slide name appears as a tooltip &mdash; your built-in sanity check before students ever see it.
+        </div>
+      </div>
+
+      <!-- PART 3: Final challenge -->
+      <div class="ppt-section">
+        <span class="ppt-section-label">The final challenge</span>
+        <h4>A keyboard students type on &mdash; one click at a time.</h4>
+        <p>After completing all checkpoints, students land on the Final Challenge: a slide showing blank letter boxes for the answer word, with clue letters pre-filled in their positions. A full QWERTY keyboard sits below. Students click each key in order, left to right, to spell out the word. Every key is a transparent shape with a hyperlink.</p>
+
+        <div class="ppt-split">
+          <div class="ppt-diagram">
+            <!-- SVG: Final challenge keyboard diagram -->
+            <svg viewBox="0 0 320 290" width="320" height="290" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="290" fill="#ece2cb" rx="4"/>
+
+              <!-- Letter slots -->
+              <text x="160" y="22" font-size="9" letter-spacing="2" fill="#6a5a45" text-anchor="middle" font-family="'JetBrains Mono',monospace">ANSWER WORD: N _ T _ S _ A</text>
+
+              <!-- 7 letter boxes -->
+              <!-- N (clue, prefilled) -->
+              <rect x="20" y="30" width="34" height="42" rx="2" fill="#efd6c4" stroke="#b8451f" stroke-width="1.5"/>
+              <text x="37" y="57" font-size="22" fill="#8c3315" text-anchor="middle" font-family="Georgia,serif">N</text>
+              <rect x="26" y="30" width="22" height="10" rx="1" fill="#b8451f"/>
+              <text x="37" y="39" font-size="7" fill="#f7f2e8" text-anchor="middle" font-family="'JetBrains Mono',monospace">clue</text>
+
+              <!-- A (blank) -->
+              <rect x="62" y="30" width="34" height="42" rx="2" fill="#f1ead9" stroke="#1e1a14" stroke-width="2"/>
+              <line x1="68" y1="68" x2="90" y2="68" stroke="#6a5a45" stroke-width="1.5"/>
+
+              <!-- T (clue) -->
+              <rect x="104" y="30" width="34" height="42" rx="2" fill="#efd6c4" stroke="#b8451f" stroke-width="1.5"/>
+              <text x="121" y="57" font-size="22" fill="#8c3315" text-anchor="middle" font-family="Georgia,serif">T</text>
+              <rect x="110" y="30" width="22" height="10" rx="1" fill="#b8451f"/>
+              <text x="121" y="39" font-size="7" fill="#f7f2e8" text-anchor="middle" font-family="'JetBrains Mono',monospace">clue</text>
+
+              <!-- A (blank) -->
+              <rect x="146" y="30" width="34" height="42" rx="2" fill="#f1ead9" stroke="#e3d6b6" stroke-width="1"/>
+              <line x1="152" y1="68" x2="174" y2="68" stroke="#6a5a45" stroke-width="1.5"/>
+
+              <!-- S (blank, current) -->
+              <rect x="188" y="28" width="34" height="44" rx="2" fill="#fff" stroke="#1e1a14" stroke-width="2"/>
+              <line x1="194" y1="68" x2="216" y2="68" stroke="#1e1a14" stroke-width="1.5"/>
+              <text x="205" y="25" font-size="8" fill="#b8451f" text-anchor="middle" font-family="'JetBrains Mono',monospace">↑ next</text>
+
+              <!-- H (clue) -->
+              <rect x="230" y="30" width="34" height="42" rx="2" fill="#efd6c4" stroke="#b8451f" stroke-width="1.5"/>
+              <text x="247" y="57" font-size="22" fill="#8c3315" text-anchor="middle" font-family="Georgia,serif">H</text>
+              <rect x="236" y="30" width="22" height="10" rx="1" fill="#b8451f"/>
+              <text x="247" y="39" font-size="7" fill="#f7f2e8" text-anchor="middle" font-family="'JetBrains Mono',monospace">clue</text>
+
+              <!-- A (blank) -->
+              <rect x="272" y="30" width="34" height="42" rx="2" fill="#f1ead9" stroke="#e3d6b6" stroke-width="1"/>
+              <line x1="278" y1="68" x2="300" y2="68" stroke="#6a5a45" stroke-width="1.5"/>
+
+              <!-- Keyboard -->
+              <!-- Row 1: QWERTYUIOP -->
+              <text x="160" y="96" font-size="9" letter-spacing="1" fill="#6a5a45" text-anchor="middle" font-family="'JetBrains Mono',monospace">Q W E R T Y U I O P</text>
+
+              <!-- Row 2: ASDFGHJKL -->
+              <text x="160" y="116" font-size="9" letter-spacing="1" fill="#6a5a45" text-anchor="middle" font-family="'JetBrains Mono',monospace">A S D F G H J K L</text>
+
+              <!-- Row 3: ZXCVBNM -->
+              <text x="160" y="136" font-size="9" letter-spacing="1" fill="#6a5a45" text-anchor="middle" font-family="'JetBrains Mono',monospace">Z X C V B N M</text>
+
+              <!-- Highlight S key as correct -->
+              <rect x="120" y="105" width="22" height="18" rx="2" fill="#e8eadd" stroke="#6a7a3a" stroke-width="1.5"/>
+              <text x="131" y="118" font-size="10" fill="#1e1a14" text-anchor="middle" font-family="Georgia,serif">S</text>
+              <text x="131" y="130" font-size="7" fill="#6a7a3a" text-anchor="middle" font-family="'JetBrains Mono',monospace">→ advance</text>
+
+              <!-- Show a wrong key -->
+              <rect x="86" y="105" width="22" height="18" rx="2" fill="#efd6c4" stroke="#b8451f" stroke-width="1"/>
+              <text x="97" y="118" font-size="10" fill="#1e1a14" text-anchor="middle" font-family="Georgia,serif">A</text>
+              <text x="97" y="130" font-size="7" fill="#b8451f" text-anchor="middle" font-family="'JetBrains Mono',monospace">→ wrong</text>
+
+              <!-- Wrong letter overlay mockup -->
+              <rect x="20" y="155" width="280" height="118" rx="3" fill="#1e1a14" opacity="0.92"/>
+              <rect x="28" y="163" width="264" height="102" rx="2" fill="#f7f2e8" stroke="#b8451f" stroke-width="2"/>
+              <text x="160" y="183" font-size="9" fill="#b8451f" text-anchor="middle" font-family="'JetBrains Mono',monospace">INCORRECT</text>
+              <text x="160" y="200" font-size="13" fill="#1e1a14" text-anchor="middle" font-family="Georgia,serif">That letter doesn&apos;t fit here.</text>
+              <rect x="52" y="240" width="216" height="22" rx="2" fill="#b8451f"/>
+              <text x="50" y="214" font-size="10" fill="#3a3127" text-anchor="start" font-family="'JetBrains Mono',monospace">  Wrong key → this overlay</text>
+              <text x="160" y="255" font-size="10" fill="#f7f2e8" text-anchor="middle" font-family="'JetBrains Mono',monospace">Back to board →</text>
+            </svg>
+          </div>
+
+          <div>
+            <ol class="ppt-steps">
+              <li class="ppt-step">
+                <span class="ppt-step-n">1</span>
+                <span class="ppt-step-body"><strong>Choose your answer word.</strong> 6&ndash;10 letters works best. It should be a key term from your content &mdash; something students will recognize as meaningful.</span>
+              </li>
+              <li class="ppt-step">
+                <span class="ppt-step-n">2</span>
+                <span class="ppt-step-body"><strong>Identify the three clue positions.</strong> One letter is earned from each checkpoint. These slots are pre-filled in rust/orange. You decide which positions those are &mdash; spread them across the word so they offer a real hint.</span>
+              </li>
+              <li class="ppt-step">
+                <span class="ppt-step-n">3</span>
+                <span class="ppt-step-body"><strong>Update the letter box text</strong> for each clue position using the transparent shape method. Change the displayed letter to match your word.</span>
+              </li>
+              <li class="ppt-step">
+                <span class="ppt-step-n">4</span>
+                <span class="ppt-step-body"><strong>The keyboard shapes are pre-linked.</strong> For each &ldquo;board state&rdquo; slide (one per letter you fill in), one key links forward and all others link to the wrong-letter overlay. You only need to update which key is the &ldquo;correct&rdquo; one for each step.</span>
+              </li>
+              <li class="ppt-step">
+                <span class="ppt-step-n">5</span>
+                <span class="ppt-step-body"><strong>The wrong-letter overlay</strong> has a &ldquo;Back to board&rdquo; button that returns the student to the same board-state slide they came from. No progress is lost &mdash; they just try again.</span>
+              </li>
+            </ol>
+
+            <div class="ppt-callout">
+              <strong>Tip: use Class Kit instead</strong>
+              If building the final challenge manually feels complex, the Class Kit AI builder handles all of this automatically &mdash; you just type your word and it wires every keyboard key to the right slide. The manual template is there for those who prefer full control.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.ppt-guide -->
+
   </section>
 
   <!-- BUILD CTA -->
