@@ -906,6 +906,7 @@
   }
   .ppt-step-body { font-size: 15px; line-height: 1.6; color: var(--ink-2); }
   .ppt-step-body strong { color: var(--ink); font-weight: 500; }
+  .ppt-substeps { list-style: lower-alpha; margin: 6px 0 0 1.4em; padding: 0; display: flex; flex-direction: column; gap: 2px; font-size: 14px; color: var(--ink-3); }
 
   /* callout box */
   .ppt-callout {
@@ -1279,19 +1280,45 @@
             <ol class="ppt-steps">
               <li class="ppt-step">
                 <span class="ppt-step-n">1</span>
-                <span class="ppt-step-body"><strong>Start with one slide — all blanks empty.</strong> The template gives you a single Final Challenge slide. Type your answer word with blanks for every letter students will need to guess (e.g. <em>F_NAL AN_WER</em>). The full keyboard is pre-wired &mdash; every key already has a wrong-answer shape on it. Drag the &ldquo;correct answer link&rdquo; shape from the side onto the first letter students need to guess.</span>
+                <span class="ppt-step-body">In the template you have only one final challenge slide that contains:
+                  <ol class="ppt-substeps">
+                    <li>A textbox for the final answer</li>
+                    <li>A full alphabet keyboard</li>
+                    <li>One &ldquo;correct answer&rdquo; link off to the side</li>
+                  </ol>
+                </span>
               </li>
               <li class="ppt-step">
                 <span class="ppt-step-n">2</span>
-                <span class="ppt-step-body"><strong>Duplicate the slide. Fill in the letter students just guessed. Move the link to the next letter.</strong> The duplicate represents what students see <em>after</em> a correct click &mdash; so fill in the letter from the previous slide (e.g. <em>FINAL AN_WER</em>), then drag the correct answer link onto the next letter they need to guess.</span>
+                <span class="ppt-step-body">Every letter button is linked as &ldquo;incorrect&rdquo;</span>
               </li>
               <li class="ppt-step">
                 <span class="ppt-step-n">3</span>
-                <span class="ppt-step-body"><strong>Repeat until the last letter.</strong> Each duplicate shows one more filled-in letter than the slide before it, and has the correct answer link on the next blank. The pattern: duplicate &rarr; fill in previous letter &rarr; move link to next letter.</span>
+                <span class="ppt-step-body">To start, drag the hidden &ldquo;answer&rdquo; link over the first correct letter in the sequence.</span>
               </li>
               <li class="ppt-step">
                 <span class="ppt-step-n">4</span>
-                <span class="ppt-step-body"><strong>The last slide is the success slide.</strong> The final duplicate has all letters filled in (e.g. <em>FINAL ANSWER</em>) and the correct answer link on the last letter. Clicking it takes students to the &ldquo;You Escaped!&rdquo; screen.</span>
+                <span class="ppt-step-body">Duplicate the initial slide</span>
+              </li>
+              <li class="ppt-step">
+                <span class="ppt-step-n">5</span>
+                <span class="ppt-step-body">Reveal the correctly guessed letter in the final answer box</span>
+              </li>
+              <li class="ppt-step">
+                <span class="ppt-step-n">6</span>
+                <span class="ppt-step-body">Move the hidden &ldquo;answer&rdquo; link to the next correct letter in the sequence</span>
+              </li>
+              <li class="ppt-step">
+                <span class="ppt-step-n">7</span>
+                <span class="ppt-step-body">Repeat this process for each missing letter in the final answer</span>
+              </li>
+              <li class="ppt-step">
+                <span class="ppt-step-n">8</span>
+                <span class="ppt-step-body">Do not create a keyboard slide for the final letter.
+                  <ol class="ppt-substeps">
+                    <li>The final correct letter is filled in on the &ldquo;success&rdquo; slide</li>
+                  </ol>
+                </span>
               </li>
             </ol>
 
