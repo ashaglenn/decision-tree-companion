@@ -1190,136 +1190,58 @@
         <h4>A keyboard students type on &mdash; one click at a time.</h4>
         <p>After completing all checkpoints, students land on the Final Challenge: a slide showing blank letter boxes for the answer word, with clue letters pre-filled in their positions. A full QWERTY keyboard sits below. Students click each key in order, left to right, to spell out the word. Each key has a transparent shape on top of it that contains the hyperlink &mdash; so just like the answer choices, you can move those shapes around without ever touching the links.</p>
 
+        <ol class="ppt-steps">
+          <li class="ppt-step">
+            <span class="ppt-step-n">1</span>
+            <span class="ppt-step-body">In the template you have only one final challenge slide that contains:
+              <ol class="ppt-substeps">
+                <li>A textbox for the final answer</li>
+                <li>A full alphabet keyboard</li>
+                <li>One &ldquo;correct answer&rdquo; link off to the side</li>
+              </ol>
+            </span>
+          </li>
+          <li class="ppt-step">
+            <span class="ppt-step-n">2</span>
+            <span class="ppt-step-body">Every letter button is linked as &ldquo;incorrect&rdquo;</span>
+          </li>
+          <li class="ppt-step">
+            <span class="ppt-step-n">3</span>
+            <span class="ppt-step-body">To start, drag the hidden &ldquo;answer&rdquo; link over the first correct letter in the sequence.</span>
+          </li>
+          <li class="ppt-step">
+            <span class="ppt-step-n">4</span>
+            <span class="ppt-step-body">Duplicate the initial slide</span>
+          </li>
+          <li class="ppt-step">
+            <span class="ppt-step-n">5</span>
+            <span class="ppt-step-body">Reveal the correctly guessed letter in the final answer box</span>
+          </li>
+          <li class="ppt-step">
+            <span class="ppt-step-n">6</span>
+            <span class="ppt-step-body">Move the hidden &ldquo;answer&rdquo; link to the next correct letter in the sequence</span>
+          </li>
+          <li class="ppt-step">
+            <span class="ppt-step-n">7</span>
+            <span class="ppt-step-body">Repeat this process for each missing letter in the final answer</span>
+          </li>
+          <li class="ppt-step">
+            <span class="ppt-step-n">8</span>
+            <span class="ppt-step-body">Do not create a keyboard slide for the final letter.
+              <ol class="ppt-substeps">
+                <li>The final correct letter is filled in on the &ldquo;success&rdquo; slide</li>
+              </ol>
+            </span>
+          </li>
+        </ol>
+
+        <div class="ppt-callout">
+          <strong>Tip: use Class Kit instead</strong>
+          If you&rsquo;d rather skip the manual setup entirely, Class Kit handles all of this automatically &mdash; type your word, and every keyboard shape is placed and linked for you. The manual template is there for those who want full control without AI.
+        </div>
+
         <img src="assets/3.png" alt="Final challenge keyboard diagram" style="display:block;max-width:100%;height:auto;border-radius:6px;margin:24px 0;"/>
 
-        <div class="ppt-split" style="display:none;">
-          <div class="ppt-diagram">
-            <!-- SVG: Final challenge keyboard diagram (hidden) -->
-            <svg viewBox="0 0 320 290" width="320" height="290" style="display:none;" xmlns="http://www.w3.org/2000/svg">
-              <rect width="320" height="290" fill="#ece2cb" rx="4"/>
-
-              <!-- Letter slots -->
-              <text x="160" y="22" font-size="9" letter-spacing="2" fill="#6a5a45" text-anchor="middle" font-family="'JetBrains Mono',monospace">ANSWER WORD: N _ T _ S _ A</text>
-
-              <!-- 7 letter boxes -->
-              <!-- N (clue, prefilled) -->
-              <rect x="20" y="30" width="34" height="42" rx="2" fill="#efd6c4" stroke="#b8451f" stroke-width="1.5"/>
-              <text x="37" y="57" font-size="22" fill="#8c3315" text-anchor="middle" font-family="Georgia,serif">N</text>
-              <rect x="26" y="30" width="22" height="10" rx="1" fill="#b8451f"/>
-              <text x="37" y="39" font-size="7" fill="#f7f2e8" text-anchor="middle" font-family="'JetBrains Mono',monospace">clue</text>
-
-              <!-- A (blank) -->
-              <rect x="62" y="30" width="34" height="42" rx="2" fill="#f1ead9" stroke="#1e1a14" stroke-width="2"/>
-              <line x1="68" y1="68" x2="90" y2="68" stroke="#6a5a45" stroke-width="1.5"/>
-
-              <!-- T (clue) -->
-              <rect x="104" y="30" width="34" height="42" rx="2" fill="#efd6c4" stroke="#b8451f" stroke-width="1.5"/>
-              <text x="121" y="57" font-size="22" fill="#8c3315" text-anchor="middle" font-family="Georgia,serif">T</text>
-              <rect x="110" y="30" width="22" height="10" rx="1" fill="#b8451f"/>
-              <text x="121" y="39" font-size="7" fill="#f7f2e8" text-anchor="middle" font-family="'JetBrains Mono',monospace">clue</text>
-
-              <!-- A (blank) -->
-              <rect x="146" y="30" width="34" height="42" rx="2" fill="#f1ead9" stroke="#e3d6b6" stroke-width="1"/>
-              <line x1="152" y1="68" x2="174" y2="68" stroke="#6a5a45" stroke-width="1.5"/>
-
-              <!-- S (blank, current) -->
-              <rect x="188" y="28" width="34" height="44" rx="2" fill="#fff" stroke="#1e1a14" stroke-width="2"/>
-              <line x1="194" y1="68" x2="216" y2="68" stroke="#1e1a14" stroke-width="1.5"/>
-              <text x="205" y="25" font-size="8" fill="#b8451f" text-anchor="middle" font-family="'JetBrains Mono',monospace">↑ next</text>
-
-              <!-- H (clue) -->
-              <rect x="230" y="30" width="34" height="42" rx="2" fill="#efd6c4" stroke="#b8451f" stroke-width="1.5"/>
-              <text x="247" y="57" font-size="22" fill="#8c3315" text-anchor="middle" font-family="Georgia,serif">H</text>
-              <rect x="236" y="30" width="22" height="10" rx="1" fill="#b8451f"/>
-              <text x="247" y="39" font-size="7" fill="#f7f2e8" text-anchor="middle" font-family="'JetBrains Mono',monospace">clue</text>
-
-              <!-- A (blank) -->
-              <rect x="272" y="30" width="34" height="42" rx="2" fill="#f1ead9" stroke="#e3d6b6" stroke-width="1"/>
-              <line x1="278" y1="68" x2="300" y2="68" stroke="#6a5a45" stroke-width="1.5"/>
-
-              <!-- Keyboard -->
-              <!-- Row 1: QWERTYUIOP -->
-              <text x="160" y="96" font-size="9" letter-spacing="1" fill="#6a5a45" text-anchor="middle" font-family="'JetBrains Mono',monospace">Q W E R T Y U I O P</text>
-
-              <!-- Row 2: ASDFGHJKL -->
-              <text x="160" y="116" font-size="9" letter-spacing="1" fill="#6a5a45" text-anchor="middle" font-family="'JetBrains Mono',monospace">A S D F G H J K L</text>
-
-              <!-- Row 3: ZXCVBNM -->
-              <text x="160" y="136" font-size="9" letter-spacing="1" fill="#6a5a45" text-anchor="middle" font-family="'JetBrains Mono',monospace">Z X C V B N M</text>
-
-              <!-- Highlight S key as correct -->
-              <rect x="120" y="105" width="22" height="18" rx="2" fill="#e8eadd" stroke="#6a7a3a" stroke-width="1.5"/>
-              <text x="131" y="118" font-size="10" fill="#1e1a14" text-anchor="middle" font-family="Georgia,serif">S</text>
-              <text x="131" y="130" font-size="7" fill="#6a7a3a" text-anchor="middle" font-family="'JetBrains Mono',monospace">→ advance</text>
-
-              <!-- Show a wrong key -->
-              <rect x="86" y="105" width="22" height="18" rx="2" fill="#efd6c4" stroke="#b8451f" stroke-width="1"/>
-              <text x="97" y="118" font-size="10" fill="#1e1a14" text-anchor="middle" font-family="Georgia,serif">A</text>
-              <text x="97" y="130" font-size="7" fill="#b8451f" text-anchor="middle" font-family="'JetBrains Mono',monospace">→ wrong</text>
-
-              <!-- Wrong letter overlay mockup -->
-              <rect x="20" y="155" width="280" height="118" rx="3" fill="#1e1a14" opacity="0.92"/>
-              <rect x="28" y="163" width="264" height="102" rx="2" fill="#f7f2e8" stroke="#b8451f" stroke-width="2"/>
-              <text x="160" y="183" font-size="9" fill="#b8451f" text-anchor="middle" font-family="'JetBrains Mono',monospace">INCORRECT</text>
-              <text x="160" y="200" font-size="13" fill="#1e1a14" text-anchor="middle" font-family="Georgia,serif">That letter doesn&apos;t fit here.</text>
-              <rect x="52" y="240" width="216" height="22" rx="2" fill="#b8451f"/>
-              <text x="50" y="214" font-size="10" fill="#3a3127" text-anchor="start" font-family="'JetBrains Mono',monospace">  Wrong key → this overlay</text>
-              <text x="160" y="255" font-size="10" fill="#f7f2e8" text-anchor="middle" font-family="'JetBrains Mono',monospace">Back to board →</text>
-            </svg>
-          </div>
-
-          <div>
-            <ol class="ppt-steps">
-              <li class="ppt-step">
-                <span class="ppt-step-n">1</span>
-                <span class="ppt-step-body">In the template you have only one final challenge slide that contains:
-                  <ol class="ppt-substeps">
-                    <li>A textbox for the final answer</li>
-                    <li>A full alphabet keyboard</li>
-                    <li>One &ldquo;correct answer&rdquo; link off to the side</li>
-                  </ol>
-                </span>
-              </li>
-              <li class="ppt-step">
-                <span class="ppt-step-n">2</span>
-                <span class="ppt-step-body">Every letter button is linked as &ldquo;incorrect&rdquo;</span>
-              </li>
-              <li class="ppt-step">
-                <span class="ppt-step-n">3</span>
-                <span class="ppt-step-body">To start, drag the hidden &ldquo;answer&rdquo; link over the first correct letter in the sequence.</span>
-              </li>
-              <li class="ppt-step">
-                <span class="ppt-step-n">4</span>
-                <span class="ppt-step-body">Duplicate the initial slide</span>
-              </li>
-              <li class="ppt-step">
-                <span class="ppt-step-n">5</span>
-                <span class="ppt-step-body">Reveal the correctly guessed letter in the final answer box</span>
-              </li>
-              <li class="ppt-step">
-                <span class="ppt-step-n">6</span>
-                <span class="ppt-step-body">Move the hidden &ldquo;answer&rdquo; link to the next correct letter in the sequence</span>
-              </li>
-              <li class="ppt-step">
-                <span class="ppt-step-n">7</span>
-                <span class="ppt-step-body">Repeat this process for each missing letter in the final answer</span>
-              </li>
-              <li class="ppt-step">
-                <span class="ppt-step-n">8</span>
-                <span class="ppt-step-body">Do not create a keyboard slide for the final letter.
-                  <ol class="ppt-substeps">
-                    <li>The final correct letter is filled in on the &ldquo;success&rdquo; slide</li>
-                  </ol>
-                </span>
-              </li>
-            </ol>
-
-            <div class="ppt-callout">
-              <strong>Tip: use Class Kit instead</strong>
-              If you&rsquo;d rather skip the manual setup entirely, Class Kit handles all of this automatically &mdash; type your word, and every keyboard shape is placed and linked for you. The manual template is there for those who want full control without AI.
-            </div>
-          </div>
-        </div>
       </div>
 
     </div><!-- /.ppt-guide -->
