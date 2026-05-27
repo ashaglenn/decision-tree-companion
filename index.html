@@ -887,6 +887,49 @@
   }
   .ppt-diagram svg { max-width: 100%; height: auto; }
 
+  /* Zoomable diagram images */
+  img.zoomable {
+    cursor: zoom-in;
+    transition: opacity 0.15s;
+  }
+  img.zoomable:hover { opacity: 0.92; }
+
+  /* Lightbox overlay */
+  #lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20,16,10,0.88);
+    z-index: 9999;
+    cursor: zoom-out;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  #lightbox.open { display: flex; }
+  #lightbox img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 6px;
+    box-shadow: 0 8px 48px rgba(0,0,0,0.5);
+    cursor: zoom-out;
+  }
+  #lightbox-close {
+    position: fixed;
+    top: 18px; right: 22px;
+    color: #f7f2e8;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.7;
+    font-family: var(--sans);
+    background: none;
+    border: none;
+    padding: 4px 8px;
+  }
+  #lightbox-close:hover { opacity: 1; }
+
   /* two-col diagram+steps layout */
   .ppt-split {
     display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;
@@ -2577,6 +2620,46 @@ window.Templates = Templates;
   ReactDOM.createRoot(document.getElementById("dt-mount")).render(<window.DecisionTree />);
   ReactDOM.createRoot(document.getElementById("ped-mount")).render(<window.PedagogyLoop />);
   ReactDOM.createRoot(document.getElementById("tpl-mount")).render(<window.Templates />);
+</script>
+
+<!-- Lightbox -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Image zoom">
+  <button id="lightbox-close" aria-label="Close">&times;</button>
+  <img id="lightbox-img" src="" alt=""/>
+</div>
+
+<script>
+  (function() {
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightbox-img');
+    const lbClose = document.getElementById('lightbox-close');
+
+    // Mark all diagram images as zoomable
+    document.querySelectorAll('img[src^="assets/"]').forEach(function(img) {
+      img.classList.add('zoomable');
+      img.title = 'Click to zoom';
+      img.addEventListener('click', function() {
+        lbImg.src = img.src;
+        lbImg.alt = img.alt;
+        lb.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    function closeLightbox() {
+      lb.classList.remove('open');
+      document.body.style.overflow = '';
+      lbImg.src = '';
+    }
+
+    lb.addEventListener('click', function(e) {
+      if (e.target === lb) closeLightbox();
+    });
+    lbClose.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  })();
 </script>
 
 </body>
