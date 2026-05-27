@@ -1029,63 +1029,9 @@
         <h4>Every answer is a text box with an invisible shape on top.</h4>
         <p>The clickable part of each answer isn&rsquo;t the text &mdash; it&rsquo;s a transparent shape sitting on top of it. That shape carries the hyperlink. This means you can freely change what any answer <em>says</em> without breaking the links, and you can swap which answer is &ldquo;correct&rdquo; by simply moving the shapes &mdash; no hyperlink editing required.</p>
 
-        <div class="ppt-split">
-          <div class="ppt-diagram">
-            <img src="assets/1.png" alt="Edit Mode vs Ready to Play: how to slide the transparent link box aside to edit text" style="width:100%;max-width:700px;border-radius:6px;display:block;"/>
-            <!-- SVG: Layer diagram (kept as fallback, hidden) -->
-            <svg viewBox="0 0 900 500" width="100%" style="display:none;" xmlns="http://www.w3.org/2000/svg">
-              <!-- background -->
-              <rect width="900" height="500" fill="#e5d9c8" rx="6"/>
+        <img src="assets/1.png" alt="Edit Mode vs Ready to Play: how to slide the transparent link box aside to edit text" style="display:block;max-width:100%;height:auto;border-radius:6px;margin:24px 0;"/>
 
-              <!-- ── LEFT: EDIT MODE ── -->
-              <text x="300" y="42" font-family="'JetBrains Mono',monospace" font-size="13" letter-spacing="3" fill="#3a3127" text-anchor="middle">EDIT MODE</text>
-
-              <!-- white text box -->
-              <rect x="38" y="75" width="230" height="170" rx="6" fill="#f5ede0"/>
-              <text x="153" y="143" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1e1a14" text-anchor="middle">Editable Textbox</text>
-              <text x="153" y="162" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1e1a14" text-anchor="middle">Containing</text>
-              <text x="153" y="181" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1e1a14" text-anchor="middle">the Answer Option</text>
-
-              <!-- SLIDE arrow -->
-              <polygon points="283,145 330,145 355,160 330,175 283,175" fill="#b8451f"/>
-              <text x="316" y="165" font-family="'JetBrains Mono',monospace" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">SLIDE</text>
-
-              <!-- transparent dashed box -->
-              <rect x="368" y="75" width="210" height="170" rx="6" fill="rgba(184,69,31,0.1)" stroke="#b8451f" stroke-width="2" stroke-dasharray="7,4"/>
-              <text x="473" y="163" font-family="'JetBrains Mono',monospace" font-size="12" fill="#b8451f" text-anchor="middle">Transparent Link Box</text>
-
-              <!-- labels below left -->
-              <text x="220" y="272" font-family="'JetBrains Mono',monospace" font-size="12" fill="#3a3127" text-anchor="middle">1. Slide the link aside</text>
-              <text x="205" y="292" font-family="'JetBrains Mono',monospace" font-size="12" fill="#3a3127" text-anchor="middle">2. Edit the text</text>
-
-              <!-- ── DIVIDER ── -->
-              <line x1="450" y1="18" x2="450" y2="330" stroke="#3a3127" stroke-width="0.6" stroke-opacity="0.35"/>
-
-              <!-- ── RIGHT: READY TO PLAY ── -->
-              <text x="675" y="42" font-family="'JetBrains Mono',monospace" font-size="13" letter-spacing="3" fill="#3a3127" text-anchor="middle">READY TO PLAY</text>
-
-              <!-- overlaid box: dashed border with text showing through -->
-              <rect x="555" y="75" width="245" height="170" rx="6" fill="#f0e6d5" stroke="#b8451f" stroke-width="2" stroke-dasharray="7,4"/>
-              <text x="677" y="143" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1e1a14" text-anchor="middle">Editable Textbox</text>
-              <text x="677" y="162" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1e1a14" text-anchor="middle">Containing</text>
-              <text x="677" y="181" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1e1a14" text-anchor="middle">the Answer Option</text>
-
-              <!-- labels below right -->
-              <text x="677" y="272" font-family="'JetBrains Mono',monospace" font-size="12" fill="#3a3127" text-anchor="middle">3. Slide the shape back</text>
-              <text x="677" y="292" font-family="'JetBrains Mono',monospace" font-size="12" fill="#3a3127" text-anchor="middle">over the text</text>
-
-              <!-- ── DARK TIP PANEL ── -->
-              <rect x="38" y="335" width="824" height="148" rx="5" fill="#1e1a14"/>
-              <text x="68" y="368" font-family="'JetBrains Mono',monospace" font-size="11" fill="#b8451f" letter-spacing="1.5">TIP: HOVERING OVER THE LINK REVEALS THE SLIDE NAME</text>
-              <text x="68" y="398" font-family="'JetBrains Mono',monospace" font-size="12" fill="#f7f2e8">
-                <tspan>Each slide has a Title (e.g. </tspan><tspan font-style="italic">Checkpoint 1 — Decision 1 — Correct</tspan><tspan>)</tspan>
-              </text>
-              <text x="68" y="420" font-family="'JetBrains Mono',monospace" font-size="12" fill="rgba(247,242,232,0.75)">Hover over any link in the edit mode to see exactly where that link goes</text>
-              <text x="68" y="440" font-family="'JetBrains Mono',monospace" font-size="12" fill="rgba(247,242,232,0.75)">to reduce confusion while building.</text>
-            </svg>
-          </div>
-
-          <ol class="ppt-steps">
+        <ol class="ppt-steps">
             <li class="ppt-step">
               <span class="ppt-step-n">1</span>
               <span class="ppt-step-body"><strong>Click the answer area.</strong> You&rsquo;ll select the transparent shape. It will have a faint selection handle — this is the clickable layer.</span>
@@ -1107,7 +1053,6 @@
               <span class="ppt-step-body"><strong>Repeat for each answer.</strong> Never delete the transparent shapes — they carry the hyperlinks.</span>
             </li>
           </ol>
-        </div>
 
         <div class="ppt-callout">
           <strong>Swapping correct &amp; wrong answers</strong>
@@ -1122,7 +1067,7 @@
         <p>You don&rsquo;t need to re-link slides when you change your content &mdash; the structure is already built. Just update the text. Here&rsquo;s the path a student takes through each question:</p>
 
         <div class="ppt-diagram">
-          <img src="assets/2.png" alt="Slide flow map showing checkpoint and wrong answer routing" style="width:100%;max-width:700px;border-radius:6px;display:block;"/>
+          <img src="assets/2.png" alt="Slide flow map showing checkpoint and wrong answer routing" style="display:block;max-width:100%;height:auto;border-radius:6px;margin:24px 0;"/>
           <!-- SVG: Flow map (hidden) -->
           <svg viewBox="0 0 680 260" width="680" height="260" style="display:none;" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -1202,9 +1147,10 @@
         <h4>A keyboard students type on &mdash; one click at a time.</h4>
         <p>After completing all checkpoints, students land on the Final Challenge: a slide showing blank letter boxes for the answer word, with clue letters pre-filled in their positions. A full QWERTY keyboard sits below. Students click each key in order, left to right, to spell out the word. Each key has a transparent shape on top of it that contains the hyperlink &mdash; so just like the answer choices, you can move those shapes around without ever touching the links.</p>
 
-        <div class="ppt-split">
+        <img src="assets/3.png" alt="Final challenge keyboard diagram" style="display:block;max-width:100%;height:auto;border-radius:6px;margin:24px 0;"/>
+
+        <div class="ppt-split" style="display:none;">
           <div class="ppt-diagram">
-            <img src="assets/3.png" alt="Final challenge keyboard diagram" style="width:100%;max-width:500px;border-radius:6px;display:block;"/>
             <!-- SVG: Final challenge keyboard diagram (hidden) -->
             <svg viewBox="0 0 320 290" width="320" height="290" style="display:none;" xmlns="http://www.w3.org/2000/svg">
               <rect width="320" height="290" fill="#ece2cb" rx="4"/>
