@@ -2498,9 +2498,9 @@ window.PedagogyLoop = PedagogyLoop;
 <!-- Templates component -->
 <script type="text/babel">
 const TEMPLATES = [
-  { id: "tpl1", name: "Template 1", link: "#" },
-  { id: "tpl2", name: "Template 2", link: "#" },
-  { id: "tpl3", name: "Template 3", link: "#" }
+  { id: "tpl1", name: "Template 1", link: "#", img: "assets/es1.png" },
+  { id: "tpl2", name: "Template 2", link: "#", img: "assets/es2.png" },
+  { id: "tpl3", name: "Template 3", link: "#", img: "assets/es3.png" }
 ];
 
 function Templates() {
@@ -2509,11 +2509,7 @@ function Templates() {
       {TEMPLATES.map((t, i) => (
         <article key={t.id} className="tpl-card">
           <div className="tpl-image">
-            <image-slot
-              id={t.id}
-              placeholder="Drop a thumbnail"
-              shape="rect"
-            ></image-slot>
+            <img src={t.img} alt={t.name} style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
             <span className="tpl-image-num">{String(i + 1).padStart(2, "0")}</span>
           </div>
           <div className="tpl-meta">
